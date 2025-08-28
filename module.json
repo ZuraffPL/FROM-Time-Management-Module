@@ -1,0 +1,52 @@
+{
+  "id": "from-time-management",
+  "title": "FROM Time Management System",
+  "description": "Comprehensive time management system for Delta Green RPG sessions. Features agent activity tracking with visual themes, day/night cycles, action queues with complete historical archive, and real-time multiplayer synchronization. Inspired by FROM TV series mechanics.",
+  "version": "1.0.4",
+  "compatibility": {
+    "minimum": "12",
+    "verified": "12.331",
+    "maximum": "12"
+  },
+  "authors": [
+    {
+      "name": "GitHub Copilot Assistant",
+      "discord": "github_copilot"
+    }
+  ],
+  "esmodules": [
+    "scripts/time-management.js"
+  ],
+  "styles": [
+    "styles/time-management.css"
+  ],
+  "languages": [
+    {
+      "lang": "en",
+      "name": "English",
+      "path": "lang/en.json"
+    },
+    {
+      "lang": "pl",
+      "name": "Polski",
+      "path": "lang/pl.json"
+    }
+  ],
+  "socket": true,
+  "system": ["deltagreen"],
+  "relationships": {
+    "systems": [
+      {
+        "id": "deltagreen",
+        "type": "system",
+        "compatibility": {}
+      }
+    ]
+  },
+  "url": "https://github.com/your-username/from-time-management",
+  "manifest": "https://github.com/your-username/from-time-management/releases/latest/download/module.json",
+  "download": "https://github.com/your-username/from-time-management/releases/latest/download/from-time-management.zip",
+  "license": "MIT",
+  "readme": "README.md",
+  "changelog": "CHANGELOG.md"
+}

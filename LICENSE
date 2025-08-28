@@ -1,0 +1,36 @@
+MIT License
+
+Copyright (c) 2025 FROM Time Management System Contributors
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+---
+
+Additional Terms:
+
+This module is designed for use with Foundry Virtual Tabletop and the Delta Green 
+RPG system. While the code is open source under MIT license, please respect the 
+intellectual property rights of:
+
+- Foundry Virtual Tabletop (by Foundry Gaming LLC)
+- Delta Green RPG System (by Arc Dream Publishing)
+- FROM TV Series (by MGM+ and related production companies)
+
+This module is a fan-created tool inspired by the FROM TV series and is not 
+officially endorsed by or affiliated with any of the above entities.
