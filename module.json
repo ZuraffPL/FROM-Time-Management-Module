@@ -2,7 +2,7 @@
   "id": "from-time-management",
   "title": "FROM Time Management System",
   "description": "Comprehensive time management system for Delta Green RPG sessions. Features agent activity tracking with visual themes, day/night cycles, action queues with complete historical archive, and real-time multiplayer synchronization. Inspired by FROM TV series mechanics.",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "compatibility": {
     "minimum": "12",
     "verified": "12.331",

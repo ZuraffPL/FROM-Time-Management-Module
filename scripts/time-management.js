@@ -100,9 +100,9 @@ class TimeManagementSystem {
         });
 
         // Po pełnej inicjalizacji gry wczytaj zapisany czas
-        Hooks.once("ready", () => {
+        Hooks.once("ready", async () => {
             if (window.TimeManagement && typeof window.TimeManagement.loadTimeFromSettings === "function") {
-                window.TimeManagement.initializeSettings(); // Inicjalizuje wszystkie ustawienia including archiwum
+                await window.TimeManagement.initializeSettings(); // Inicjalizuje wszystkie ustawienia including archiwum
                 window.TimeManagement.initializeSocket();
                 console.log("FROM TimeManagement: System zarządzania czasem jest gotowy");
             }
@@ -1844,19 +1844,49 @@ class TimeManagementSystem {
         };
         
         this.actionArchive[action.agentId].push(archiveAction);
+        // Save to both files and settings for backup
+        this.saveActionArchiveToFiles();
         this.saveActionArchiveToSettings();
         
         console.log(`FROM TimeManagement: Added action "${action.name}" to archive for agent ${action.agentName}`);
     }
 
     /**
-     * Save action archive to settings
+     * Save action archive to individual files for each agent
+     */
+    async saveActionArchiveToFiles() {
+        try {
+            if (!game.ready) return;
+
+            for (const [agentId, agentArchive] of Object.entries(this.actionArchive)) {
+                const fileName = `from-time-management-agent-${agentId}.json`;
+                const fileData = JSON.stringify(agentArchive, null, 2);
+                
+                try {
+                    // Save to world data directory
+                    await FilePicker.upload("data", "worlds/" + game.world.id + "/", 
+                        new File([fileData], fileName, { type: "application/json" }));
+                    
+                    console.log(`FROM TimeManagement: Saved archive for agent ${agentId} to file ${fileName}`);
+                } catch (uploadError) {
+                    console.error(`FROM TimeManagement: Could not save archive file for agent ${agentId}:`, uploadError);
+                }
+            }
+            
+            console.log(`FROM TimeManagement: Archive save operation completed for ${Object.keys(this.actionArchive).length} agents`);
+        } catch (error) {
+            console.error("FROM TimeManagement: Could not save action archive to files", error);
+        }
+    }
+
+    /**
+     * Save action archive to settings (legacy backup)
      */
     saveActionArchiveToSettings() {
         try {
             if (game.settings && game.ready) {
                 game.settings.set('from-time-management', 'actionArchive', this.actionArchive);
-                console.log(`FROM TimeManagement: Saved action archive with ${Object.keys(this.actionArchive).length} agents to settings`);
+                console.log(`FROM TimeManagement: Saved action archive with ${Object.keys(this.actionArchive).length} agents to settings (backup)`);
             }
         } catch (error) {
             console.error("FROM TimeManagement: Could not save action archive to settings", error);
@@ -1864,7 +1894,95 @@ class TimeManagementSystem {
     }
 
     /**
-     * Load action archive from settings
+     * Migrate existing archive from settings to files (one-time operation)
+     */
+    async migrateArchiveToFiles() {
+        try {
+            if (!game.ready) return;
+
+            // First check if we already have files
+            const worldPath = `worlds/${game.world.id}`;
+            try {
+                const browse = await FilePicker.browse("data", worldPath);
+                const existingFiles = browse.files.filter(file => 
+                    file.includes('from-time-management-agent-') && file.endsWith('.json')
+                );
+                
+                if (existingFiles.length > 0) {
+                    console.log("FROM TimeManagement: Archive files already exist, skipping migration");
+                    return;
+                }
+            } catch (e) {
+                console.log("FROM TimeManagement: Unable to check for existing files, proceeding with migration");
+            }
+
+            // Load from settings and save to files
+            const savedArchive = game.settings.get('from-time-management', 'actionArchive');
+            if (savedArchive && typeof savedArchive === 'object' && Object.keys(savedArchive).length > 0) {
+                this.actionArchive = savedArchive;
+                await this.saveActionArchiveToFiles();
+                console.log(`FROM TimeManagement: Migrated archive from settings to files for ${Object.keys(this.actionArchive).length} agents`);
+            } else {
+                console.log("FROM TimeManagement: No archive data found in settings to migrate");
+            }
+        } catch (error) {
+            console.error("FROM TimeManagement: Error during archive migration:", error);
+        }
+    }
+
+    /**
+     * Load action archive from individual files for each agent
+     */
+    async loadActionArchiveFromFiles() {
+        try {
+            if (!game.ready) return;
+
+            this.actionArchive = {};
+            const worldPath = `worlds/${game.world.id}`;
+            
+            // Get list of all files in world directory
+            try {
+                const browse = await FilePicker.browse("data", worldPath);
+                const archiveFiles = browse.files.filter(file => 
+                    file.includes('from-time-management-agent-') && file.endsWith('.json')
+                );
+
+                console.log(`FROM TimeManagement: Found ${archiveFiles.length} agent archive files`);
+
+                for (const filePath of archiveFiles) {
+                    try {
+                        const response = await fetch(filePath);
+                        if (response.ok) {
+                            const agentArchive = await response.json();
+                            // Extract agent ID from filename
+                            const fileName = filePath.split('/').pop();
+                            const agentId = fileName.replace('from-time-management-agent-', '').replace('.json', '');
+                            
+                            if (agentId && agentArchive) {
+                                this.actionArchive[agentId] = agentArchive;
+                                console.log(`FROM TimeManagement: Loaded archive for agent ${agentId} from file`);
+                            }
+                        }
+                    } catch (fileError) {
+                        console.error(`FROM TimeManagement: Could not load archive file ${filePath}:`, fileError);
+                    }
+                }
+                
+                console.log(`FROM TimeManagement: Archive load operation completed. Loaded ${Object.keys(this.actionArchive).length} agents`);
+            } catch (browseError) {
+                console.warn("FROM TimeManagement: Could not browse world directory for archive files:", browseError);
+                // Fall back to settings if file system not accessible
+                this.loadActionArchiveFromSettings();
+            }
+        } catch (error) {
+            console.error("FROM TimeManagement: Could not load action archive from files", error);
+            // Fall back to settings on error
+            this.loadActionArchiveFromSettings();
+        }
+    }
+
+    /**
+     * Load action archive from settings (legacy backup)
      */
     loadActionArchiveFromSettings() {
         try {
@@ -2230,6 +2348,7 @@ class TimeManagementSystem {
             if (archiveAction) {
                 archiveAction.completed = true;
                 archiveAction.removedAt = Date.now();
+                this.saveActionArchiveToFiles();
                 this.saveActionArchiveToSettings();
             }
         }
@@ -2260,6 +2379,7 @@ class TimeManagementSystem {
         const removedCount = beforeCount - this.actionQueue.length;
         
         this.saveActionQueueToSettings();
+        this.saveActionArchiveToFiles();
         this.saveActionArchiveToSettings();
         this.emitAgentTrackingUpdate();
         this.refreshActionQueue();
@@ -2642,12 +2762,17 @@ class TimeManagementSystem {
     /**
      * Initialize all settings
      */
-    initializeSettings() {
+    async initializeSettings() {
         try {
             this.loadCurrentTimeFromSettings();
             this.loadAgentTrackingFromSettings();
             this.loadActionQueueFromSettings();
-            this.loadActionArchiveFromSettings();
+            
+            // Migrate old archive data if needed
+            await this.migrateArchiveToFiles();
+            
+            // Load archive from files
+            await this.loadActionArchiveFromFiles();
             
             console.log("FROM TimeManagement: All settings initialized successfully");
         } catch (error) {
