@@ -2517,6 +2517,7 @@ class TimeManagementSystem {
                 agentDayTimeTracking: this.agentDayTimeTracking,
                 agentNightTimeTracking: this.agentNightTimeTracking,
                 actionQueue: this.actionQueue,
+                actionArchive: this.actionArchive, // Dodajemy dane archiwum
                 trackingMode: this.trackingMode,
                 currentTime: this.currentTime
             };
@@ -2527,7 +2528,7 @@ class TimeManagementSystem {
                 userId: userId
             });
             
-            console.log("FROM TimeManagement: Sent current data to user:", userId);
+            console.log("FROM TimeManagement: Sent current data to user:", userId, "including archive with", Object.keys(this.actionArchive).length, "agents");
         }
     }
 
@@ -2712,7 +2713,8 @@ class TimeManagementSystem {
      */
     saveCurrentTimeToSettings() {
         if (game.user.isGM) {
-            game.settings.set("from-time-management", "currentTime", this.currentTime);
+            game.settings.set("from-time-management", "currentGameTime", this.currentTime);
+            console.log("FROM TimeManagement: Saved current time to settings:", this.formatCurrentTime());
         }
     }
 
@@ -2722,12 +2724,13 @@ class TimeManagementSystem {
     loadCurrentTimeFromSettings() {
         try {
             if (game.settings && game.ready) {
-                const savedTime = game.settings.get("from-time-management", "currentTime");
+                const savedTime = game.settings.get("from-time-management", "currentGameTime");
                 if (savedTime && typeof savedTime === 'object') {
                     this.currentTime = {
                         hours: savedTime.hours || 12,
                         minutes: savedTime.minutes || 0,
-                        day: savedTime.day || 1
+                        day: savedTime.day || 1,
+                        year: savedTime.year || new Date().getFullYear()
                     };
                     console.log("FROM TimeManagement: Loaded time from settings:", this.formatCurrentTime());
                 } else {
