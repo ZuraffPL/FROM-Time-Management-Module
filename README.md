@@ -2,7 +2,7 @@
 
 A comprehensive time management module for Delta Green RPG sessions in Foundry VTT, inspired by the mechanics of the FROM TV series.
 
-> **Latest Version: 1.0.5** - Critical archive persistence bug fixed! Agent action archives now use file-based storage for bulletproof data persistence across Foundry restarts. [See changelog](CHANGELOG.md) for full details.
+> **Latest Version: 1.1.0** - 🎯 **CRITICAL MULTIPLAYER FIX**: GM's agent time adjustments (+1h/-1h buttons) now sync instantly to all players! Complete socket communication overhaul ensures bulletproof real-time synchronization. [See release notes](RELEASE-NOTES-v1.1.0.md) for details.
 
 ## Features
 
@@ -43,6 +43,10 @@ A comprehensive time management module for Delta Green RPG sessions in Foundry V
 - **Atmospheric Design**: Maintains Delta Green horror aesthetic while improving usability
 
 ### 🔄 Real-time Synchronization
+- **Rock-Solid Multiplayer (v1.1.0)**: Complete socket communication overhaul ensures GM actions sync instantly to all players
+- **Agent Time Adjustments**: GM's +1h/-1h buttons now update all players' progress bars in real-time
+- **Bulletproof Connection**: Multiple initialization points and retry logic prevent sync failures
+- **Late-Join Support**: Players connecting mid-session receive full data synchronization
 - Socket-based multiplayer synchronization
 - Automatic UI updates across all connected clients
 - Permission system (players manage own characters, GM controls all)

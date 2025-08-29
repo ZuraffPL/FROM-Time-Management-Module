@@ -5,6 +5,59 @@ All notable changes to the FROM Time Management System will be documented in thi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0] - 2025-08-29
+
+### Fixed
+- **CRITICAL: Agent Time Adjustment Synchronization**: Fixed issue where GM's +1h/-1h buttons for individual agents didn't sync progress bars to players in real-time
+  - Root cause: Socket communication was not properly initialized for players joining after GM
+  - Players' progress bars remained static while GM could see updates immediately
+  - Affected multiplayer experience where GM actions weren't visible to players
+
+### Enhanced
+- **Socket Communication Reliability**: Completely redesigned socket initialization system
+  - Added `socketInitialized` flag to track registration status
+  - Implemented multiple initialization attempts with retry logic
+  - Socket now re-initializes when players open agent tracking windows
+  - Added automatic fallback initialization 2 seconds after ready hook
+
+- **Real-time Synchronization Robustness**: 
+  - Enhanced socket message handling with comprehensive logging
+  - Added user identification in all socket debug messages
+  - Improved error handling for socket communication failures
+  - Better detection of GM vs Player message routing
+
+- **Debugging and Monitoring**: 
+  - Added extensive logging throughout socket lifecycle
+  - Enhanced agent time adjustment logging with before/after states
+  - Improved visibility into data transmission between GM and players
+  - Better error reporting for troubleshooting sync issues
+
+### Technical Changes
+- **Socket Management**: 
+  - Modified `initializeSocket()` to prevent duplicate handler registration
+  - Added socket cleanup before re-registration to avoid conflicts
+  - Enhanced timing for socket initialization in game lifecycle
+  - Implemented socket health checking and automatic recovery
+
+- **Player Experience**: 
+  - Socket initialization now happens both at startup AND when opening tracker
+  - Added user-specific logging to identify connection issues
+  - Improved data validation in `updateDataFromGM()` function
+  - Enhanced window refresh mechanisms for real-time updates
+
+- **GM Experience**:
+  - Added detailed transmission logs for debugging multiplayer issues
+  - Enhanced agent time adjustment feedback with mode and time tracking
+  - Improved notification system for successful time adjustments
+  - Better visibility into which players receive updates
+
+### Developer Notes
+This release resolves the final critical multiplayer synchronization issue where GM actions weren't immediately visible to players. The socket communication system has been completely reinforced with multiple fallback mechanisms and comprehensive debugging.
+
+**Impact**: GM's individual agent time adjustments (+1h/-1h buttons) now properly synchronize progress bars to all connected players in real-time.
+
+**Breaking Change**: None - fully backward compatible with enhanced reliability.
+
 ## [1.0.6] - 2025-08-29
 
 ### Fixed

@@ -11,6 +11,7 @@ class TimeManagementSystem {
         this.dialog = null;
         this.agentTrackerDialog = null;
         this.agentTrackerOpen = false;
+        this.socketInitialized = false; // Track socket initialization
         this.currentTime = {
             hours: 12,
             minutes: 0,
@@ -101,9 +102,21 @@ class TimeManagementSystem {
 
         // Po pełnej inicjalizacji gry wczytaj zapisany czas
         Hooks.once("ready", async () => {
+            console.log("FROM TimeManagement: [INIT] Ready hook - User:", game.user?.name, "| isGM:", game.user?.isGM);
+            
             if (window.TimeManagement && typeof window.TimeManagement.loadTimeFromSettings === "function") {
                 await window.TimeManagement.initializeSettings(); // Inicjalizuje wszystkie ustawienia including archiwum
                 window.TimeManagement.initializeSocket();
+                
+                // Dodatkowa rejestracja socket po krótkim opóźnieniu
+                setTimeout(() => {
+                    console.log("FROM TimeManagement: [INIT] Additional socket check for:", game.user?.name);
+                    if (!window.TimeManagement.socketInitialized) {
+                        console.log("FROM TimeManagement: [INIT] Socket not initialized, retrying...");
+                        window.TimeManagement.initializeSocket();
+                    }
+                }, 2000);
+                
                 console.log("FROM TimeManagement: System zarządzania czasem jest gotowy");
             }
         });
@@ -323,6 +336,23 @@ class TimeManagementSystem {
         // Przycisk ustawienia czasu
         html.find("#set-time-btn").click(() => {
             this.setTimeFromInputs(html);
+        });
+
+        // Event listenery na zmiany w polach czasu - natychmiastowa synchronizacja
+        html.find("#hours-input, #minutes-input, #day-input, #year-input").on('input change', () => {
+            // Opóźnij wykonanie o 500ms aby uniknąć zbyt częstych aktualizacji podczas wpisywania
+            clearTimeout(this.inputChangeTimeout);
+            this.inputChangeTimeout = setTimeout(() => {
+                this.setTimeFromInputs(html);
+            }, 500);
+        });
+
+        // Natychmiastowa reakcja na Enter w polach input
+        html.find("#hours-input, #minutes-input, #day-input, #year-input").keypress((e) => {
+            if (e.which === 13) { // Enter key
+                clearTimeout(this.inputChangeTimeout);
+                this.setTimeFromInputs(html);
+            }
         });
 
         // Przycisk nowego dnia
@@ -663,6 +693,12 @@ class TimeManagementSystem {
      */
     openAgentTracker() {
         console.log("FROM TimeManagement: Opening Agent Tracker");
+        
+        // Ensure socket is initialized for players
+        if (!game.user.isGM && !this.socketInitialized) {
+            console.log("FROM TimeManagement: [SOCKET] Player socket not initialized, initializing now...");
+            this.initializeSocket();
+        }
         
         if (this.agentTrackerOpen && this.agentTrackerDialog) {
             this.agentTrackerDialog.bringToTop();
@@ -1776,6 +1812,14 @@ class TimeManagementSystem {
         }
 
         this.saveAgentTrackingToSettings();
+        
+        console.log(`FROM TimeManagement: [AGENT TIME ADJUSTMENT] Before sync - Agent: ${agent.name}, Adjustment: ${adjustment}h, Mode: ${isDayMode ? 'day' : 'night'}`);
+        console.log(`FROM TimeManagement: [AGENT TIME ADJUSTMENT] Current tracking values:`, {
+            agentTimeTracking: this.agentTimeTracking[agentId],
+            dayTracking: this.agentDayTimeTracking[agentId],
+            nightTracking: this.agentNightTimeTracking[agentId]
+        });
+        
         this.emitAgentTrackingUpdate();
         this.refreshAgentTracker();
 
@@ -1783,7 +1827,7 @@ class TimeManagementSystem {
         const adjustmentText = adjustment > 0 ? `+${adjustment}h` : `${adjustment}h`;
         ui.notifications.info(`Time adjusted for ${agent.name}: ${adjustmentText} (${modeText} mode)`);
         
-        console.log(`FROM TimeManagement: Adjusted time for agent ${agent.name}: ${adjustmentText} in ${modeText} mode`);
+        console.log(`FROM TimeManagement: [AGENT TIME ADJUSTMENT] Completed for agent ${agent.name}: ${adjustmentText} in ${modeText} mode`);
     }
 
     async addActionToQueue(agentId, actionName, actionCost, overrideTrackingMode = null) {
@@ -2438,6 +2482,12 @@ class TimeManagementSystem {
                 actionArchive: this.actionArchive
             };
 
+            console.log(`FROM TimeManagement: [SYNC] Emitting agent tracking update to all players:`, {
+                agentTimeTracking: data.agentTimeTracking,
+                trackingMode: data.trackingMode,
+                currentTime: data.currentTime
+            });
+
             game.socket.emit("module.from-time-management", {
                 operation: "updateAgentTracking",
                 data: data
@@ -2462,24 +2512,38 @@ class TimeManagementSystem {
             return;
         }
 
+        console.log("FROM TimeManagement: [SOCKET] Initializing socket for user:", game.user.name, "| GM:", game.user.isGM);
+        
+        // Unregister existing handler to prevent duplicates
+        if (this.socketInitialized) {
+            game.socket.off("module.from-time-management");
+            console.log("FROM TimeManagement: [SOCKET] Removed existing handler");
+        }
+        
         game.socket.on("module.from-time-management", (data) => {
+            console.log("FROM TimeManagement: [SOCKET] Received message:", data.operation, "| User:", game.user.name);
             this.handleSocketMessage(data);
         });
         
-        console.log("FROM TimeManagement: Socket initialized");
+        this.socketInitialized = true;
+        console.log("FROM TimeManagement: [SOCKET] Socket initialized successfully for user:", game.user.name);
     }
 
     /**
      * Handle socket messages
      */
     handleSocketMessage(data) {
-        console.log("FROM TimeManagement: Received socket message:", data.operation);
+        console.log("FROM TimeManagement: [SOCKET] Processing message:", data.operation, "| User:", game.user.name, "| isGM:", game.user.isGM);
         
         try {
             switch (data.operation) {
                 case "updateAgentTracking":
+                    console.log("FROM TimeManagement: [SOCKET] updateAgentTracking - User:", game.user.name, "| isGM:", game.user.isGM);
                     if (!game.user.isGM) {
+                        console.log("FROM TimeManagement: [SOCKET] Player receiving agent tracking update");
                         this.updateDataFromGM(data.data);
+                    } else {
+                        console.log("FROM TimeManagement: [SOCKET] GM ignoring own message");
                     }
                     break;
                     
@@ -2602,7 +2666,11 @@ class TimeManagementSystem {
             return;
         }
         
-        console.log("FROM TimeManagement: Updating data from GM");
+        console.log("FROM TimeManagement: [PLAYER SYNC] Updating data from GM:", {
+            agentTimeTracking: data.agentTimeTracking,
+            trackingMode: data.trackingMode,
+            currentTime: data.currentTime
+        });
         
         this.agentTimeTracking = data.agentTimeTracking || {};
         this.agentDayTimeTracking = data.agentDayTimeTracking || {};
@@ -2611,6 +2679,8 @@ class TimeManagementSystem {
         this.trackingMode = data.trackingMode || 'day';
         this.currentTime = data.currentTime || this.currentTime;
         this.actionArchive = data.actionArchive || {};
+        
+        console.log("FROM TimeManagement: [PLAYER SYNC] Data updated, refreshing windows...");
         
         // Force refresh of all windows with explicit timeout
         this.forceRefreshAllWindows();
