@@ -5,6 +5,42 @@ All notable changes to the FROM Time Management System will be documented in thi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.6] - 2025-08-29
+
+### Fixed
+- **CRITICAL: Player Archive Visibility**: Fixed issue where players saw empty archive windows
+  - Root cause: GM wasn't sending archive data to players via socket communication
+  - Solution: Added `actionArchive` to `sendCurrentDataToUser()` function
+  - Players can now see complete action history for their agents
+
+- **CRITICAL: Time Settings Persistence**: Resolved complete loss of time settings after Foundry restart
+  - Root cause: Incorrect setting name reference (`"currentTime"` vs `"currentGameTime"`)
+  - Functions affected: `loadCurrentTimeFromSettings()` and `saveCurrentTimeToSettings()`
+  - All time data (hours, day, year) now persists correctly across sessions and version upgrades
+
+### Enhanced  
+- **Data Synchronization**: Improved GM-to-Player data transmission
+  - Archive data now included in all current data requests from players
+  - Enhanced logging shows number of agents when sending archive data
+  - Better debugging information for data sync operations
+
+- **Time Management Robustness**: 
+  - Added proper `year` field handling in time loading functions
+  - Enhanced error logging for time operations
+  - More comprehensive time data validation
+
+### Technical Changes
+- **Socket Communication**: Modified `sendCurrentDataToUser()` to include complete archive data
+- **Settings Consistency**: All time-related functions now use correct `"currentGameTime"` setting name
+- **Deployment Workflow**: Added `deploy-to-modules.ps1` script for easier updates to Foundry modules folder
+
+### Developer Notes
+This release addresses the two most critical issues reported by users:
+1. Empty player archive windows (now players see full action history)
+2. Loss of time settings after restart (time data now persists correctly)
+
+**Breaking Change**: None - this is a backward-compatible bug fix release.
+
 ## [1.0.5] - 2025-08-29
 
 ### Fixed
