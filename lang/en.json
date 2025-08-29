@@ -87,6 +87,12 @@
     "days-active": "Days active",
     "day": "Day",
     "actions": "actions",
-    "added-on": "Added on"
+    "added-on": "Added on",
+    "or-create-custom": "Or create custom:",
+    "select-action": "Select Action",
+    "choose-action-template": "Choose action template:",
+    "action-name-placeholder": "Action name",
+    "cost-in-hours-placeholder": "Cost in hours",
+    "for": "for"
   }
 }

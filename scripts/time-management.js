@@ -1573,21 +1573,21 @@ class TimeManagementSystem {
 
         const content = `
             <div class="action-selection-dialog">
-                <h3>Add action for: <strong>${agentName}</strong></h3>
+                <h3>${game.i18n.localize("from-time-management.add-action") || "Add action"} ${game.i18n.localize("from-time-management.for") || "for"}: <strong>${agentName}</strong></h3>
                 
-                <h4>Choose action template:</h4>
+                <h4>${game.i18n.localize("from-time-management.choose-action-template") || "Choose action template"}:</h4>
                 <div class="action-templates">
                     ${templatesHTML}
                 </div>
                 
-                <h4>Or create custom:</h4>
-                <input type="text" class="custom-action-input" id="custom-action-name" placeholder="Action name" />
-                <input type="number" class="custom-action-input" id="custom-action-cost" placeholder="Cost in hours" min="1" max="12" />
+                <h4>${game.i18n.localize("from-time-management.or-create-custom") || "Or create custom"}:</h4>
+                <input type="text" class="custom-action-input" id="custom-action-name" placeholder="${game.i18n.localize("from-time-management.action-name-placeholder") || "Action name"}" />
+                <input type="number" class="custom-action-input" id="custom-action-cost" placeholder="${game.i18n.localize("from-time-management.cost-in-hours-placeholder") || "Cost in hours"}" min="1" max="12" />
             </div>
         `;
 
         new Dialog({
-            title: "Select Action",
+            title: game.i18n.localize("from-time-management.select-action") || "Select Action",
             content: content,
             buttons: {
                 add: {
@@ -1629,6 +1629,7 @@ class TimeManagementSystem {
                 }
             },
             render: (html) => {
+                // Handle action template selection
                 html.find('.action-template').click(function() {
                     html.find('.action-template').removeClass('selected').css('background', '');
                     $(this).addClass('selected').css('background', 'rgba(76, 175, 80, 0.2)');
@@ -1637,9 +1638,37 @@ class TimeManagementSystem {
                     html.find('#custom-action-cost').val('');
                 });
 
+                // Handle custom input changes
                 html.find('#custom-action-name, #custom-action-cost').on('input', function() {
                     html.find('.action-template').removeClass('selected').css('background', '');
                 });
+
+                // Fix keyboard input issues - prevent Foundry from capturing keystrokes
+                const customInputs = html.find('#custom-action-name, #custom-action-cost');
+                
+                customInputs.on('keydown keyup keypress', function(event) {
+                    // Stop event propagation to prevent Foundry hotkeys from interfering
+                    event.stopPropagation();
+                });
+
+                customInputs.on('focus', function() {
+                    // Disable Foundry keyboard manager while input is focused
+                    if (game.keyboard) {
+                        game.keyboard._handled = new Set();
+                    }
+                });
+
+                customInputs.on('blur', function() {
+                    // Re-enable Foundry keyboard manager when input loses focus
+                    if (game.keyboard) {
+                        game.keyboard._handled = new Set();
+                    }
+                });
+
+                // Ensure the input field can receive focus properly
+                setTimeout(() => {
+                    html.find('#custom-action-name')[0]?.focus();
+                }, 100);
             }
         }).render(true);
     }

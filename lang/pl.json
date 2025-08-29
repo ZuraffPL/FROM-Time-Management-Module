@@ -78,7 +78,7 @@
     "from-time": "Od",
     "to-time": "do",
     "day-action": "Dzień",
-    "night-action": "Noc",
+    "night-action": "Noc", 
     "day-night-action": "Dzień/Noc",
     "action-queue-empty": "Kolejka akcji jest pusta",
     "action-archive": "Archiwum Akcji",
@@ -87,6 +87,12 @@
     "days-active": "Dni aktywności",
     "day": "Dzień",
     "actions": "akcji",
-    "added-on": "Dodano"
+    "added-on": "Dodano",
+    "or-create-custom": "Lub stwórz własną:",
+    "select-action": "Wybierz Akcję",
+    "choose-action-template": "Wybierz szablon akcji:",
+    "action-name-placeholder": "Nazwa akcji",
+    "cost-in-hours-placeholder": "Koszt w godzinach",
+    "for": "dla"
   }
 }
