@@ -5,6 +5,51 @@ All notable changes to the FROM Time Management System will be documented in thi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.5] - 2025-08-29
+
+### Fixed
+- **Critical Archive Persistence Bug**: Resolved issue where agent action archives were completely empty after Foundry VTT restart
+  - Root cause: Foundry world settings were unreliable for persistent data storage
+  - Archive data was being lost between game sessions despite appearing to save correctly
+
+### Added
+- **File-Based Archive Storage System**: Revolutionary new approach to data persistence
+  - Individual JSON files for each agent stored in world directory (`from-time-management-agent-[ID].json`)
+  - Files are saved in `Data/worlds/[world-name]/` alongside other world data
+  - Automatic one-time migration from old settings-based storage to new file system
+  - Dual storage approach: files for reliability + settings as backup
+
+- **Enhanced Data Persistence Architecture**:
+  - `saveActionArchiveToFiles()` - Creates individual agent archive files
+  - `loadActionArchiveFromFiles()` - Reads from files with automatic fallback to settings
+  - `migrateArchiveToFiles()` - One-time migration for existing installations
+  - Asynchronous initialization for proper file system access
+
+### Improved
+- **Robust Error Handling**: Multiple fallback layers ensure data is never lost
+  - If file system fails, automatically falls back to settings storage
+  - Comprehensive error logging for troubleshooting
+  - Graceful degradation when file access is restricted
+
+- **Performance Optimizations**: 
+  - Asynchronous file operations don't block UI
+  - Efficient file browsing and loading mechanisms
+  - Reduced dependency on Foundry's settings system
+
+### Technical Changes
+- **Breaking Change**: `initializeSettings()` is now async - automatically handled
+- **New Functions**: Added comprehensive file-based storage system
+- **Migration Path**: Seamless upgrade from 1.0.4 with automatic data migration
+- **Backwards Compatibility**: Falls back to settings if file system unavailable
+
+### Developer Notes
+- Files are created with proper JSON formatting for manual inspection/editing
+- Archive files can be backed up, shared, or manually edited if needed
+- System is designed to work even in restricted file system environments
+- Future-proofs the module against Foundry settings limitations
+
+**Upgrade Impact**: This version should finally resolve all archive persistence issues. Existing users will automatically have their data migrated to the new file system on first launch of v1.0.5.
+
 ## [1.0.4] - 2025-08-28
 
 ### Added

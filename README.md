@@ -2,6 +2,8 @@
 
 A comprehensive time management module for Delta Green RPG sessions in Foundry VTT, inspired by the mechanics of the FROM TV series.
 
+> **Latest Version: 1.0.5** - Critical archive persistence bug fixed! Agent action archives now use file-based storage for bulletproof data persistence across Foundry restarts. [See changelog](CHANGELOG.md) for full details.
+
 ## Features
 
 ### 🕐 Time Management
@@ -28,6 +30,10 @@ A comprehensive time management module for Delta Green RPG sessions in Foundry V
 - **Day-based Organization**: Actions grouped by day with collapsible sections for easy navigation
 - **Individual Agent Archives**: Personal archive window for each agent accessible via "Archive Actions" button
 - **Detailed Action Records**: Full preservation of action details, timestamps, and context
+- **Bulletproof Persistence (v1.0.5+)**: Revolutionary file-based storage system ensures data survives Foundry restarts
+  - Individual JSON files per agent stored in world directory
+  - Automatic migration from old settings-based storage
+  - Dual storage approach (files + settings backup) for maximum reliability
 - **Never Lose Data**: Actions are archived, never truly deleted, ensuring complete campaign history
 
 ### 🎨 Agent Visual Themes
@@ -71,6 +77,13 @@ A comprehensive time management module for Delta Green RPG sessions in Foundry V
 2. Click "Install Module"
 3. Search for "FROM Time Management"
 4. Click "Install" and enable in your world
+
+### Upgrading to v1.0.5+
+If you're upgrading from v1.0.4 or earlier:
+- **Automatic Migration**: Your existing action archive data will be automatically migrated to the new file-based system on first launch
+- **Backup Created**: Your old data remains in world settings as a backup
+- **No Manual Action Required**: The upgrade is seamless and preserves all existing data
+- **File Location**: New archive files will be created in `Data/worlds/[your-world]/from-time-management-agent-[ID].json`
 
 ## Usage
 
@@ -171,14 +184,24 @@ The module uses `module.from-time-management` socket events for real-time synchr
 - `requestCurrentData`: Player requests for current data sync
 
 ### Data Storage
-All data persists in Foundry's world settings:
+The module uses a hybrid storage approach for maximum reliability:
+
+#### File-Based Storage (v1.0.5+)
+- **Agent Archives**: Individual JSON files per agent in world directory
+  - Location: `Data/worlds/[world-name]/from-time-management-agent-[ID].json`
+  - Contains complete action history with timestamps and details
+  - Survives Foundry restarts and world reloads
+  - Can be manually backed up, shared, or edited
+
+#### Foundry Settings Storage (Backup)
+All data also persists in Foundry's world settings as backup:
 - `currentGameTime`: Current in-game time and date
 - `agentTimeTracking`: Legacy total time tracking
 - `agentDayTimeTracking`: Day-specific time tracking per agent
 - `agentNightTimeTracking`: Night-specific time tracking per agent
 - `trackingMode`: Current tracking mode (day/night)
 - `actionQueue`: All queued and completed actions
-- `actionArchive`: Complete historical archive of all agent actions organized by agent and day
+- `actionArchive`: Complete historical archive (backup for file system)
 
 ### Performance
 - Optimized for real-time updates without lag
