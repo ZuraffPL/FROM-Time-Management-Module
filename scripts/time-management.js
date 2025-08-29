@@ -350,10 +350,30 @@ class TimeManagementSystem {
         // Ustaw miesiąc na stałą wartość (nie używamy go)
         this.currentTime.month = 1;
 
+        // Automatycznie ustaw tracking mode na podstawie godziny
+        this.updateTrackingModeBasedOnTime();
+
         this.updateTimeDisplay(html);
         this.saveTimeToSettings();
         this.emitAgentTrackingUpdate();
         ui.notifications.info(game.i18n.localize("from-time-management.time-set") || "Time has been set!");
+    }
+
+    /**
+     * Automatycznie aktualizuje tracking mode na podstawie aktualnej godziny
+     */
+    updateTrackingModeBasedOnTime() {
+        const currentHour = this.currentTime.hours;
+        const isDayTime = currentHour >= 6 && currentHour < 18;
+        const newMode = isDayTime ? 'day' : 'night';
+        
+        if (this.trackingMode !== newMode) {
+            this.trackingMode = newMode;
+            console.log(`FROM TimeManagement: Tracking mode automatically changed to ${newMode} based on hour ${currentHour}`);
+            
+            // Save updated tracking mode to settings
+            this.saveTrackingModeToSettings();
+        }
     }
 
     /**
@@ -376,6 +396,9 @@ class TimeManagementSystem {
         }
 
         // Nie ma ograniczenia na dni w miasteczku - mogą być dowolnie duże
+
+        // Automatycznie ustaw tracking mode na podstawie nowej godziny
+        this.updateTrackingModeBasedOnTime();
 
         this.updateDialogIfOpen();
         this.saveTimeToSettings();
@@ -418,6 +441,9 @@ class TimeManagementSystem {
                 
                 // Resetuj paski postępu wszystkich agentów
                 this.resetAllAgentsProgress();
+                
+                // Automatycznie ustaw tracking mode na podstawie aktualnej godziny
+                this.updateTrackingModeBasedOnTime();
                 
                 // Zapisz zmiany
                 this.saveTimeToSettings();
