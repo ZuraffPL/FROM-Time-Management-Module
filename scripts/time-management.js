@@ -44,19 +44,40 @@ class TimeManagementSystem {
         // Tworzymy globalną instancję wcześniej
         window.TimeManagement = new TimeManagementSystem();
         
-        // Dodajemy kontrolkę do paska narzędzi tylko dla GM
+        // Dodajemy kontrolkę do paska narzędzi - kompatybilność z Foundry v13
         Hooks.on("getSceneControlButtons", (controls) => {
-            // Sprawdzamy czy controls jest tablicą (kompatybilność z Foundry v13)
+            // Tylko dla GM
+            if (!game.user.isGM) return;
+            
+            // W Foundry v13 może być inna struktura
+            let controlsArray = controls;
             if (!Array.isArray(controls)) {
-                console.warn("FROM TimeManagement: controls parameter is not an array, skipping button registration");
-                return;
+                if (controls && Array.isArray(controls.controls)) {
+                    controlsArray = controls.controls;
+                } else {
+                    // Dodaj nową kontrolkę bezpośrednio do obiektu controls w v13
+                    if (controls && typeof controls === 'object') {
+                        controls.push = controls.push || function(item) {
+                            if (!this.length) this.length = 0;
+                            this[this.length] = item;
+                            this.length++;
+                        };
+                        controlsArray = controls;
+                    } else {
+                        console.warn("FROM TimeManagement: Unable to register scene control button");
+                        return;
+                    }
+                }
             }
             
-            const tokenControls = controls.find(c => c.name === "token");
-            if (tokenControls && Array.isArray(tokenControls.tools)) {
-                // Kontrolka zarządzania czasem - tylko dla GM
-                if (game.user.isGM) {
-                    tokenControls.tools.push({
+            // Znajdź lub utwórz kontrolkę token
+            let tokenControls = null;
+            if (Array.isArray(controlsArray)) {
+                tokenControls = controlsArray.find(c => c.name === "token");
+            }
+            
+            if (tokenControls && tokenControls.tools) {
+                tokenControls.tools.push({
                         name: "time-management",
                         title: game.i18n.localize("from-time-management.time-management") || "Time Management",
                         icon: "fas fa-clock",
@@ -70,7 +91,6 @@ class TimeManagementSystem {
                         },
                         button: true
                     });
-                }
                 
                 // Kontrolka śledzenia agentów - dla wszystkich
                 tokenControls.tools.push({
