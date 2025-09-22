@@ -46,8 +46,14 @@ class TimeManagementSystem {
         
         // Dodajemy kontrolkę do paska narzędzi tylko dla GM
         Hooks.on("getSceneControlButtons", (controls) => {
+            // Sprawdzamy czy controls jest tablicą (kompatybilność z Foundry v13)
+            if (!Array.isArray(controls)) {
+                console.warn("FROM TimeManagement: controls parameter is not an array, skipping button registration");
+                return;
+            }
+            
             const tokenControls = controls.find(c => c.name === "token");
-            if (tokenControls) {
+            if (tokenControls && Array.isArray(tokenControls.tools)) {
                 // Kontrolka zarządzania czasem - tylko dla GM
                 if (game.user.isGM) {
                     tokenControls.tools.push({
