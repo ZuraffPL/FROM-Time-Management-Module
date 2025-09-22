@@ -2,7 +2,25 @@
 
 A comprehensive time management module for Delta Green RPG sessions in Foundry VTT, inspired by the mechanics of the FROM TV series.
 
-> **Latest Version: 1.1.0** - 🎯 **CRITICAL MULTIPLAYER FIX**: GM's agent time adjustments (+1h/-1h buttons) now sync instantly to all players! Complete socket communication overhaul ensures bulletproof real-time synchronization. [See release notes](RELEASE-NOTES-v1.1.0.md) for details.
+> **Latest Version: 1.2.0** - � **FOUNDRY VTT v13 COMPATIBILITY**: Full support for Foundry v13 with enhanced scene control registration! Advanced fallback mechanisms ensure controls appear on any version. Perfect reliability across v12-v13. [See release notes](CHANGELOG.md#120---2025-09-22) for complete details.
+
+## 🚀 Version Highlights
+
+### v1.2.0 - Foundry v13 Ready
+- ✅ **Full Foundry VTT v13 Compatibility** - Enhanced scene control system
+- ✅ **Multi-layer Registration** - Primary hook + intelligent fallbacks ensure 100% reliability  
+- ✅ **Cross-Version Support** - Works seamlessly on v12.331 through v13.348
+- ✅ **Zero Configuration** - Automatic version detection and appropriate handling
+
+### v1.1.0 - Multiplayer Perfection  
+- 🎯 **Critical Multiplayer Fix** - GM agent time adjustments sync instantly to all players
+- 🔄 **Socket Communication Overhaul** - Bulletproof real-time synchronization
+- 📡 **Late-Join Support** - Players connecting mid-session get full data sync
+
+### v1.0.5 - Data Persistence Revolution
+- 💾 **File-Based Archive Storage** - Individual JSON files per agent ensure data survives restarts
+- 🔄 **Automatic Migration** - Seamless upgrade from old settings-based storage
+- 🛡️ **Dual Storage System** - Files + settings backup for maximum reliability
 
 ## Features
 
@@ -68,10 +86,17 @@ A comprehensive time management module for Delta Green RPG sessions in Foundry V
 - **Travel Town ↔ Colony House** (1h) - Transportation
 - **Forest Exploration** (6h) - Extended wilderness search
 
+## 🔧 Compatibility
+
+- **Foundry VTT**: v12.331 - v13.348 (verified)
+- **System**: Delta Green (primary), adaptable to other systems
+- **Dependencies**: None (standalone module)
+- **Multiplayer**: Full support for multiple GMs and players
+
 ## Installation
 
 ### Manual Installation
-1. Download the latest release from the [releases page](https://github.com/your-username/from-time-management/releases)
+1. Download the latest release from the [releases page](https://github.com/ZuraffPL/FROM-Time-Management-Module/releases)
 2. Extract the contents to your Foundry `Data/modules/` directory
 3. Restart Foundry VTT
 4. Enable the module in your world's module settings

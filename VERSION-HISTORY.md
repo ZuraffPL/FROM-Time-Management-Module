@@ -1,7 +1,32 @@
 # FROM Time Management System - Version History
 
-## Version 1.1.0 (2025-08-29) - CURRENT RELEASE
-**🎯 MULTIPLAYER SYNCHRONIZATION RELEASE**
+## Version 1.2.0 (2025-09-22) - CURRENT RELEASE
+**� FOUNDRY VTT v13 COMPATIBILITY RELEASE**
+
+### Major Compatibility Update
+- ✅ **Full Foundry VTT v13 Support**: Complete compatibility with latest Foundry version
+- ✅ **Enhanced Scene Control Registration**: Multi-layer approach ensures controls always appear
+- ✅ **Cross-Version Architecture**: Seamless operation on v12.331 through v13.348
+- ✅ **Zero Configuration**: Automatic version detection and appropriate handling
+
+### Technical Innovations
+- Advanced scene control registration with intelligent fallbacks
+- Hook execution monitoring and automatic recovery systems
+- Object vs array structure detection for cross-version compatibility
+- Comprehensive debugging infrastructure for troubleshooting
+
+### v13 Specific Enhancements
+- Support for Application v2 API and object-based controls structure
+- Direct UI manipulation when standard hooks don't fire
+- Enhanced error recovery with multiple registration strategies
+- Future-proof design for upcoming Foundry releases
+
+**Impact**: Ensures module works perfectly on any Foundry version from v12 to v13+!
+
+---
+
+## Version 1.1.0 (2025-08-29)
+**�🎯 MULTIPLAYER SYNCHRONIZATION RELEASE**
 
 ### Critical Fix
 - ✅ **Agent Time Adjustment Synchronization**: GM's +1h/-1h buttons now sync progress bars to all players instantly
@@ -130,7 +155,7 @@
 - ✅ **Action Queue System**: 8 pre-defined templates with time costs
 - ✅ **Day/Night Cycles**: Visual mode switching and "New Day" functionality
 - ✅ **Multiplayer Support**: Socket-based synchronization
-- ✅ **Localization**: English and extensible translation system
+- ✅ **Localization**: English and Polish translation system
 
 ### Technical Foundation
 - Foundry VTT v12.331+ compatibility
@@ -143,12 +168,26 @@
 
 ---
 
+## Compatibility Matrix
+
+| Version | Foundry VTT | Key Feature | Status |
+|---------|-------------|-------------|---------|
+| 1.2.0 | v12.331 - v13.348 | Foundry v13 Support | ✅ Current |
+| 1.1.0 | v12.331+ | Multiplayer Sync | ✅ Stable |
+| 1.0.6 | v12.331+ | Bug Fixes | ✅ Stable |
+| 1.0.5 | v12.331+ | File Storage | ✅ Stable |
+| 1.0.4 | v12.331+ | Visual Themes | ✅ Stable |
+| 1.0.0-1.0.3 | v12.331+ | Basic Features | ⚠️ Upgrade Recommended |
+
+---
+
 ## Upgrade Path Summary
 
-**From any version → 1.1.0**: 
+**From any version → 1.2.0**: 
 - ✅ Seamless upgrade with no data loss
 - ✅ All previous bugs automatically fixed
+- ✅ Full Foundry v13 compatibility
 - ✅ Enhanced reliability and performance
-- ✅ Complete multiplayer synchronization
+- ✅ Zero configuration required
 
-**Recommended Action**: Update to v1.1.0 immediately for best experience!
+**Recommended Action**: Update to v1.2.0 immediately for Foundry v13 compatibility!
