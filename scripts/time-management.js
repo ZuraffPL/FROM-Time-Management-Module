@@ -49,86 +49,75 @@ class TimeManagementSystem {
             // Tylko dla GM
             if (!game.user.isGM) return;
             
-            // W Foundry v13 może być inna struktura
-            let controlsArray = controls;
-            if (!Array.isArray(controls)) {
-                if (controls && Array.isArray(controls.controls)) {
-                    controlsArray = controls.controls;
-                } else {
-                    // Dodaj nową kontrolkę bezpośrednio do obiektu controls w v13
-                    if (controls && typeof controls === 'object') {
-                        controls.push = controls.push || function(item) {
-                            if (!this.length) this.length = 0;
-                            this[this.length] = item;
-                            this.length++;
-                        };
-                        controlsArray = controls;
-                    } else {
-                        console.warn("FROM TimeManagement: Unable to register scene control button");
-                        return;
+            try {
+                // Sprawdź czy controls jest tablicą (starsza wersja Foundry)
+                if (Array.isArray(controls)) {
+                    const tokenControls = controls.find(c => c.name === "token");
+                    if (tokenControls && Array.isArray(tokenControls.tools)) {
+                        tokenControls.tools.push({
+                            name: "time-management",
+                            title: game.i18n.localize("from-time-management.time-management") || "Time Management",
+                            icon: "fas fa-clock",
+                            onClick: () => {
+                                if (window.TimeManagement && typeof window.TimeManagement.openDialog === "function") {
+                                    window.TimeManagement.openDialog();
+                                } else {
+                                    console.error("FROM TimeManagement: System zarządzania czasem nie jest dostępny");
+                                    ui.notifications.error("System zarządzania czasem nie jest jeszcze gotowy. Spróbuj ponownie za chwilę.");
+                                }
+                            },
+                            button: true
+                        });
+                        
+                        // Kontrolka śledzenia agentów - dla wszystkich użytkowników
+                        tokenControls.tools.push({
+                            name: "agent-tracker",
+                            title: game.i18n.localize("from-time-management.agent-tracker") || "Agent Activity Tracker",
+                            icon: "fas fa-users-cog",
+                            onClick: () => {
+                                if (window.TimeManagement && typeof window.TimeManagement.openAgentTracker === "function") {
+                                    window.TimeManagement.openAgentTracker();
+                                } else {
+                                    console.error("FROM TimeManagement: System śledzenia agentów nie jest dostępny");
+                                    ui.notifications.error("System śledzenia agentów nie jest jeszcze gotowy. Spróbuj ponownie za chwilę.");
+                                }
+                            },
+                            button: true
+                        });
+                        
+                        // Kontrolka kolejki akcji - dla wszystkich użytkowników
+                        tokenControls.tools.push({
+                            name: "action-queue",
+                            title: game.i18n.localize("from-time-management.action-queue") || "Action Queue",
+                            icon: "fas fa-clipboard-list",
+                            onClick: () => {
+                                if (window.TimeManagement && typeof window.TimeManagement.openActionQueue === "function") {
+                                    window.TimeManagement.openActionQueue();
+                                } else {
+                                    console.error("FROM TimeManagement: System kolejki akcji nie jest dostępny");
+                                    ui.notifications.error("System kolejki akcji nie jest jeszcze gotowy. Spróbuj ponownie za chwilę.");
+                                }
+                            },
+                            button: true
+                        });
                     }
+                } else {
+                    console.warn("FROM TimeManagement: controls is not an array in Foundry v13, skipping button registration");
                 }
-            }
-            
-            // Znajdź lub utwórz kontrolkę token
-            let tokenControls = null;
-            if (Array.isArray(controlsArray)) {
-                tokenControls = controlsArray.find(c => c.name === "token");
-            }
-            
-            if (tokenControls && tokenControls.tools) {
-                tokenControls.tools.push({
-                        name: "time-management",
-                        title: game.i18n.localize("from-time-management.time-management") || "Time Management",
-                        icon: "fas fa-clock",
-                        onClick: () => {
-                            if (window.TimeManagement && typeof window.TimeManagement.openDialog === "function") {
-                                window.TimeManagement.openDialog();
-                            } else {
-                                console.error("FROM TimeManagement: System zarządzania czasem nie jest dostępny");
-                                ui.notifications.error("System zarządzania czasem nie jest jeszcze gotowy. Spróbuj ponownie za chwilę.");
-                            }
-                        },
-                        button: true
-                    });
-                
-                // Kontrolka śledzenia agentów - dla wszystkich
-                tokenControls.tools.push({
-                    name: "agent-tracker",
-                    title: game.i18n.localize("from-time-management.agent-tracker") || "Agent Activity Tracker",
-                    icon: "fas fa-users-cog",
-                    onClick: () => {
-                        if (window.TimeManagement && typeof window.TimeManagement.openAgentTracker === "function") {
-                            window.TimeManagement.openAgentTracker();
-                        } else {
-                            console.error("FROM TimeManagement: System śledzenia agentów nie jest dostępny");
-                            ui.notifications.error("System śledzenia agentów nie jest jeszcze gotowy. Spróbuj ponownie za chwilę.");
-                        }
-                    },
-                    button: true
-                });
-                
-                // Kontrolka kolejki akcji - dla wszystkich
-                tokenControls.tools.push({
-                    name: "action-queue",
-                    title: game.i18n.localize("from-time-management.action-queue") || "Action Queue",
-                    icon: "fas fa-clipboard-list",
-                    onClick: () => {
-                        if (window.TimeManagement && typeof window.TimeManagement.openActionQueue === "function") {
-                            window.TimeManagement.openActionQueue();
-                        } else {
-                            console.error("FROM TimeManagement: System kolejki akcji nie jest dostępny");
-                            ui.notifications.error("System kolejki akcji nie jest jeszcze gotowy. Spróbuj ponownie za chwilę.");
-                        }
-                    },
-                    button: true
-                });
+            } catch (error) {
+                console.error("FROM TimeManagement: Error registering scene control buttons:", error);
             }
         });
 
         // Po pełnej inicjalizacji gry wczytaj zapisany czas
         Hooks.once("ready", async () => {
             console.log("FROM TimeManagement: [INIT] Ready hook - User:", game.user?.name, "| isGM:", game.user?.isGM);
+            
+            // Jeśli kontrolki nie zostały dodane przez getSceneControlButtons, 
+            // spróbuj dodać je bezpośrednio do UI po inicjalizacji (Foundry v13)
+            if (game.user.isGM && game.canvas && ui.controls) {
+                console.log("FROM TimeManagement: Ready for alternative control registration if needed");
+            }
             
             if (window.TimeManagement && typeof window.TimeManagement.loadTimeFromSettings === "function") {
                 await window.TimeManagement.initializeSettings(); // Inicjalizuje wszystkie ustawienia including archiwum
