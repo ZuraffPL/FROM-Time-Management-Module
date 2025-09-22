@@ -46,21 +46,29 @@ class TimeManagementSystem {
         
         // Dodajemy kontrolkę do paska narzędzi - kompatybilność z Foundry v13
         Hooks.on("getSceneControlButtons", (controls) => {
-            // Tylko dla GM
-            if (!game.user.isGM) return;
-            
             try {
+                console.log("FROM TimeManagement: getSceneControlButtons hook called");
+                console.log("FROM TimeManagement: controls structure:", controls);
+                console.log("FROM TimeManagement: user is GM:", game.user.isGM);
+                
                 // W Foundry v13 struktura została zmieniona z tablicy na obiekt rekordów
                 if (Array.isArray(controls)) {
                     // Foundry v12 i starsze - controls jest tablicą
+                    console.log("FROM TimeManagement: Using array structure (Foundry v12)");
                     const tokenControls = controls.find(c => c.name === "token");
                     if (tokenControls && Array.isArray(tokenControls.tools)) {
                         addTimeManagementTools(tokenControls.tools);
+                    } else {
+                        console.warn("FROM TimeManagement: Token controls not found or invalid");
                     }
                 } else if (controls && typeof controls === 'object') {
                     // Foundry v13+ - controls jest obiektem z rekordami
+                    console.log("FROM TimeManagement: Using object structure (Foundry v13)");
                     if (controls.token && controls.token.tools) {
                         addTimeManagementTools(controls.token.tools);
+                    } else {
+                        console.warn("FROM TimeManagement: Token controls not found in object structure");
+                        console.log("FROM TimeManagement: Available controls:", Object.keys(controls));
                     }
                 } else {
                     console.warn("FROM TimeManagement: Unable to determine controls structure");
@@ -72,23 +80,31 @@ class TimeManagementSystem {
 
         // Funkcja pomocnicza do dodawania narzędzi
         function addTimeManagementTools(toolsArray) {
-            if (!Array.isArray(toolsArray)) return;
+            if (!Array.isArray(toolsArray)) {
+                console.warn("FROM TimeManagement: toolsArray is not an array");
+                return;
+            }
+            
+            console.log("FROM TimeManagement: Adding tools to array, current length:", toolsArray.length);
             
             // Kontrolka zarządzania czasem - tylko dla GM
-            toolsArray.push({
-                name: "time-management",
-                title: game.i18n.localize("from-time-management.time-management") || "Time Management",
-                icon: "fas fa-clock",
-                onClick: () => {
-                    if (window.TimeManagement && typeof window.TimeManagement.openDialog === "function") {
-                        window.TimeManagement.openDialog();
-                    } else {
-                        console.error("FROM TimeManagement: System zarządzania czasem nie jest dostępny");
-                        ui.notifications.error("System zarządzania czasem nie jest jeszcze gotowy. Spróbuj ponownie za chwilę.");
-                    }
-                },
-                button: true
-            });
+            if (game.user.isGM) {
+                toolsArray.push({
+                    name: "time-management",
+                    title: game.i18n.localize("from-time-management.time-management") || "Time Management",
+                    icon: "fas fa-clock",
+                    onClick: () => {
+                        if (window.TimeManagement && typeof window.TimeManagement.openDialog === "function") {
+                            window.TimeManagement.openDialog();
+                        } else {
+                            console.error("FROM TimeManagement: System zarządzania czasem nie jest dostępny");
+                            ui.notifications.error("System zarządzania czasem nie jest jeszcze gotowy. Spróbuj ponownie za chwilę.");
+                        }
+                    },
+                    button: true
+                });
+                console.log("FROM TimeManagement: Added Time Management tool");
+            }
             
             // Kontrolka śledzenia agentów - dla wszystkich użytkowników
             toolsArray.push({
@@ -105,6 +121,7 @@ class TimeManagementSystem {
                 },
                 button: true
             });
+            console.log("FROM TimeManagement: Added Agent Tracker tool");
             
             // Kontrolka kolejki akcji - dla wszystkich użytkowników
             toolsArray.push({
@@ -121,6 +138,8 @@ class TimeManagementSystem {
                 },
                 button: true
             });
+            console.log("FROM TimeManagement: Added Action Queue tool");
+            console.log("FROM TimeManagement: Final tools array length:", toolsArray.length);
         }
 
         // Po pełnej inicjalizacji gry wczytaj zapisany czas
