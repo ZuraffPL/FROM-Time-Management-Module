@@ -55,8 +55,9 @@ class TimeManagementSystem {
                 if (Array.isArray(controls)) {
                     // Foundry v12 i starsze - controls jest tablicą
                     console.log("FROM TimeManagement: Using array structure (Foundry v12)");
-                    const tokenControls = controls.find(c => c.name === "token");
+                    let tokenControls = controls.find(c => c.name === "tokens") || controls.find(c => c.name === "token");
                     if (tokenControls && Array.isArray(tokenControls.tools)) {
+                        console.log("FROM TimeManagement: Found token controls in array");
                         addTimeManagementTools(tokenControls.tools);
                     } else {
                         console.warn("FROM TimeManagement: Token controls not found or invalid");
@@ -64,11 +65,19 @@ class TimeManagementSystem {
                 } else if (controls && typeof controls === 'object') {
                     // Foundry v13+ - controls jest obiektem z rekordami
                     console.log("FROM TimeManagement: Using object structure (Foundry v13)");
-                    if (controls.token && controls.token.tools) {
+                    if (controls.tokens && controls.tokens.tools) {
+                        console.log("FROM TimeManagement: Found tokens control with tools");
+                        addTimeManagementTools(controls.tokens.tools);
+                    } else if (controls.token && controls.token.tools) {
+                        console.log("FROM TimeManagement: Found token control with tools");
                         addTimeManagementTools(controls.token.tools);
                     } else {
                         console.warn("FROM TimeManagement: Token controls not found in object structure");
                         console.log("FROM TimeManagement: Available controls:", Object.keys(controls));
+                        // Sprawdźmy strukturę kontrolki tokens
+                        if (controls.tokens) {
+                            console.log("FROM TimeManagement: tokens control structure:", controls.tokens);
+                        }
                     }
                 } else {
                     console.warn("FROM TimeManagement: Unable to determine controls structure");
