@@ -538,6 +538,7 @@ class TimeManagementSystem {
             height: "auto",
             resizable: true,
             popOut: true, // Allow dialog to be popped out
+            minimizable: true, // Allow minimizing
             classes: ["time-management-dialog"]
         });
 
@@ -1108,6 +1109,7 @@ class TimeManagementSystem {
             height: "auto",
             resizable: true,
             popOut: true, // Allow dialog to be popped out
+            minimizable: true, // Allow minimizing
             classes: ["agent-tracker-dialog"]
         });
 
@@ -1397,6 +1399,7 @@ class TimeManagementSystem {
             height: "auto",
             resizable: true,
             popOut: true, // Allow dialog to be popped out
+            minimizable: true, // Allow minimizing
             classes: ["action-queue-dialog"]
         });
 
@@ -2008,7 +2011,8 @@ class TimeManagementSystem {
                 }, 100);
             }
         }, {
-            popOut: true // Allow dialog to be popped out
+            popOut: true, // Allow dialog to be popped out
+            minimizable: true // Allow minimizing
         }).render(true);
     }
 
@@ -2398,7 +2402,8 @@ class TimeManagementSystem {
             width: 600,
             height: 500,
             resizable: true,
-            popOut: true // Allow dialog to be popped out
+            popOut: true, // Allow dialog to be popped out
+            minimizable: true // Allow minimizing
         });
 
         dialog.render(true);

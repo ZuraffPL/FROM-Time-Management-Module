@@ -534,7 +534,7 @@
 
 .action-item.completed .action-name {
     text-decoration: line-through;
-    color: rgba(255, 255, 255, 0.5);
+    color: rgba(200, 200, 200, 0.8); /* More visible gray color for completed actions */
 }
 
 .action-item.completed .action-cost {
