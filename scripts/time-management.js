@@ -95,11 +95,9 @@ class TimeManagementSystem {
                             console.log("FROM TimeManagement: Creating tools array for target control");
                             targetControl.tools = [];
                         } else if (typeof targetControl.tools === 'object' && !Array.isArray(targetControl.tools)) {
-                            console.log("FROM TimeManagement: Converting tools object to array");
-                            // Konwertuj obiekt tools na tablicę
-                            const toolsArray = Object.values(targetControl.tools);
-                            console.log("FROM TimeManagement: Tools converted to array:", toolsArray);
-                            addTimeManagementTools(toolsArray, targetControl);
+                            console.log("FROM TimeManagement: Target control has tools object");
+                            // Przekaż obiekt bezpośrednio do funkcji
+                            addTimeManagementTools(null, targetControl);
                         } else if (Array.isArray(targetControl.tools)) {
                             console.log("FROM TimeManagement: Target control has tools array");
                             addTimeManagementTools(targetControl.tools);
