@@ -127,148 +127,147 @@ class TimeManagementSystem {
 
         // Funkcja pomocnicza do dodawania narzędzi
         function addTimeManagementTools(toolsArray, targetControl = null) {
-            if (!Array.isArray(toolsArray)) {
-                console.warn("FROM TimeManagement: toolsArray is not an array, type:", typeof toolsArray);
-                
-                // Jeśli mamy targetControl z obiektem tools, spróbuj dodać bezpośrednio
-                if (targetControl && targetControl.tools && typeof targetControl.tools === 'object') {
-                    console.log("FROM TimeManagement: Attempting to add tools directly to control object");
-                    
-                    // W Foundry v13 tools to obiekt, więc dodajmy narzędzia bezpośrednio
-                    const existingToolNames = Object.keys(targetControl.tools);
-                    console.log("FROM TimeManagement: Existing tool names:", existingToolNames);
-                    
-                    // Kontrolka zarządzania czasem - tylko dla GM
-                    if (game.user.isGM && !existingToolNames.includes("time-management")) {
-                        targetControl.tools["time-management"] = {
-                            name: "time-management",
-                            title: game.i18n.localize("from-time-management.time-management") || "Time Management",
-                            icon: "fas fa-clock",
-                            onClick: () => {
-                                if (window.TimeManagement && typeof window.TimeManagement.openDialog === "function") {
-                                    window.TimeManagement.openDialog();
-                                } else {
-                                    console.error("FROM TimeManagement: System zarządzania czasem nie jest dostępny");
-                                    ui.notifications.error("System zarządzania czasem nie jest jeszcze gotowy. Spróbuj ponownie za chwilę.");
-                                }
-                            },
-                            button: true
-                        };
-                        console.log("FROM TimeManagement: Added Time Management tool to object");
-                    }
-                    
-                    // Kontrolka śledzenia agentów - dla wszystkich użytkowników
-                    if (!existingToolNames.includes("agent-tracker")) {
-                        targetControl.tools["agent-tracker"] = {
-                            name: "agent-tracker",
-                            title: game.i18n.localize("from-time-management.agent-tracker") || "Agent Activity Tracker",
-                            icon: "fas fa-users-cog",
-                            visible: true,
-                            onClick: () => {
-                                if (window.TimeManagement && typeof window.TimeManagement.openAgentTracker === "function") {
-                                    window.TimeManagement.openAgentTracker();
-                                } else {
-                                    console.error("FROM TimeManagement: System śledzenia agentów nie jest dostępny");
-                                    ui.notifications.error("System śledzenia agentów nie jest jeszcze gotowy. Spróbuj ponownie za chwilę.");
-                                }
-                            },
-                            button: true
-                        };
-                        console.log("FROM TimeManagement: Added Agent Tracker tool to object");
-                    }
-                    
-                    // Kontrolka kolejki akcji - dla wszystkich użytkowników
-                    if (!existingToolNames.includes("action-queue")) {
-                        targetControl.tools["action-queue"] = {
-                            name: "action-queue",
-                            title: game.i18n.localize("from-time-management.action-queue") || "Action Queue",
-                            icon: "fas fa-clipboard-list",
-                            visible: true,
-                            onClick: () => {
-                                if (window.TimeManagement && typeof window.TimeManagement.openActionQueue === "function") {
-                                    window.TimeManagement.openActionQueue();
-                                } else {
-                                    console.error("FROM TimeManagement: System kolejki akcji nie jest dostępny");
-                                    ui.notifications.error("System kolejki akcji nie jest jeszcze gotowy. Spróbuj ponownie za chwilę.");
-                                }
-                            },
-                            button: true
-                        };
-                        console.log("FROM TimeManagement: Added Action Queue tool to object");
-                    }
-                    
-                    console.log("FROM TimeManagement: Final tools object keys:", Object.keys(targetControl.tools));
-                    return;
+            // Handle object-based controls (Foundry v13)
+            if (toolsArray === null && targetControl && targetControl.tools && typeof targetControl.tools === 'object') {
+                console.log("FROM TimeManagement: Handling object-based tools directly");
+                const existingToolNames = Object.keys(targetControl.tools);
+                console.log("FROM TimeManagement: Existing tool names:", existingToolNames);
+
+                // Kontrolka zarządzania czasem - tylko dla GM
+                if (game.user.isGM && !existingToolNames.includes("time-management")) {
+                    targetControl.tools["time-management"] = {
+                        name: "time-management",
+                        title: game.i18n.localize("from-time-management.time-management") || "Time Management",
+                        icon: "fas fa-clock",
+                        onClick: () => {
+                            if (window.TimeManagement && typeof window.TimeManagement.openDialog === "function") {
+                                window.TimeManagement.openDialog();
+                            } else {
+                                console.error("FROM TimeManagement: System zarządzania czasem nie jest dostępny");
+                                ui.notifications.error("System zarządzania czasem nie jest jeszcze gotowy. Spróbuj ponownie za chwilę.");
+                            }
+                        },
+                        button: true
+                    };
+                    console.log("FROM TimeManagement: Added Time Management tool to object");
                 }
-                
+
+                // Kontrolka śledzenia agentów - dla wszystkich użytkowników
+                if (!existingToolNames.includes("agent-tracker")) {
+                    targetControl.tools["agent-tracker"] = {
+                        name: "agent-tracker",
+                        title: game.i18n.localize("from-time-management.agent-tracker") || "Agent Activity Tracker",
+                        icon: "fas fa-users-cog",
+                        visible: true,
+                        onClick: () => {
+                            if (window.TimeManagement && typeof window.TimeManagement.openAgentTracker === "function") {
+                                window.TimeManagement.openAgentTracker();
+                            } else {
+                                console.error("FROM TimeManagement: System śledzenia agentów nie jest dostępny");
+                                ui.notifications.error("System śledzenia agentów nie jest jeszcze gotowy. Spróbuj ponownie za chwilę.");
+                            }
+                        },
+                        button: true
+                    };
+                    console.log("FROM TimeManagement: Added Agent Tracker tool to object");
+                }
+
+                // Kontrolka kolejki akcji - dla wszystkich użytkowników
+                if (!existingToolNames.includes("action-queue")) {
+                    targetControl.tools["action-queue"] = {
+                        name: "action-queue",
+                        title: game.i18n.localize("from-time-management.action-queue") || "Action Queue",
+                        icon: "fas fa-clipboard-list",
+                        visible: true,
+                        onClick: () => {
+                            if (window.TimeManagement && typeof window.TimeManagement.openActionQueue === "function") {
+                                window.TimeManagement.openActionQueue();
+                            } else {
+                                console.error("FROM TimeManagement: System kolejki akcji nie jest dostępny");
+                                ui.notifications.error("System kolejki akcji nie jest jeszcze gotowy. Spróbuj ponownie za chwilę.");
+                            }
+                        },
+                        button: true
+                    };
+                    console.log("FROM TimeManagement: Added Action Queue tool to object");
+                }
+
+                console.log("FROM TimeManagement: Final tools object keys:", Object.keys(targetControl.tools));
                 return;
             }
-            
-            console.log("FROM TimeManagement: Adding tools to array, current length:", toolsArray.length);
-            
-            // Sprawdź czy narzędzia już istnieją, żeby uniknąć duplikatów
-            const existingTools = toolsArray.map(tool => tool.name);
-            
-            // Kontrolka zarządzania czasem - tylko dla GM
-            if (game.user.isGM && !existingTools.includes("time-management")) {
-                toolsArray.push({
-                    name: "time-management",
-                    title: game.i18n.localize("from-time-management.time-management") || "Time Management",
-                    icon: "fas fa-clock",
-                    onClick: () => {
-                        if (window.TimeManagement && typeof window.TimeManagement.openDialog === "function") {
-                            window.TimeManagement.openDialog();
-                        } else {
-                            console.error("FROM TimeManagement: System zarządzania czasem nie jest dostępny");
-                            ui.notifications.error("System zarządzania czasem nie jest jeszcze gotowy. Spróbuj ponownie za chwilę.");
-                        }
-                    },
-                    button: true
-                });
-                console.log("FROM TimeManagement: Added Time Management tool");
+
+            // Handle array-based controls (Foundry v12 and fallback)
+            if (Array.isArray(toolsArray)) {
+                console.log("FROM TimeManagement: Adding tools to array, current length:", toolsArray.length);
+
+                // Sprawdź czy narzędzia już istnieją, żeby uniknąć duplikatów
+                const existingTools = toolsArray.map(tool => tool.name);
+
+                // Kontrolka zarządzania czasem - tylko dla GM
+                if (game.user.isGM && !existingTools.includes("time-management")) {
+                    toolsArray.push({
+                        name: "time-management",
+                        title: game.i18n.localize("from-time-management.time-management") || "Time Management",
+                        icon: "fas fa-clock",
+                        onClick: () => {
+                            if (window.TimeManagement && typeof window.TimeManagement.openDialog === "function") {
+                                window.TimeManagement.openDialog();
+                            } else {
+                                console.error("FROM TimeManagement: System zarządzania czasem nie jest dostępny");
+                                ui.notifications.error("System zarządzania czasem nie jest jeszcze gotowy. Spróbuj ponownie za chwilę.");
+                            }
+                        },
+                        button: true
+                    });
+                    console.log("FROM TimeManagement: Added Time Management tool");
+                }
+
+                // Kontrolka śledzenia agentów - dla wszystkich użytkowników
+                if (!existingTools.includes("agent-tracker")) {
+                    toolsArray.push({
+                        name: "agent-tracker",
+                        title: game.i18n.localize("from-time-management.agent-tracker") || "Agent Activity Tracker",
+                        icon: "fas fa-users-cog",
+                        visible: true,
+                        onClick: () => {
+                            if (window.TimeManagement && typeof window.TimeManagement.openAgentTracker === "function") {
+                                window.TimeManagement.openAgentTracker();
+                            } else {
+                                console.error("FROM TimeManagement: System śledzenia agentów nie jest dostępny");
+                                ui.notifications.error("System śledzenia agentów nie jest jeszcze gotowy. Spróbuj ponownie za chwilę.");
+                            }
+                        },
+                        button: true
+                    });
+                    console.log("FROM TimeManagement: Added Agent Tracker tool");
+                }
+
+                // Kontrolka kolejki akcji - dla wszystkich użytkowników
+                if (!existingTools.includes("action-queue")) {
+                    toolsArray.push({
+                        name: "action-queue",
+                        title: game.i18n.localize("from-time-management.action-queue") || "Action Queue",
+                        icon: "fas fa-clipboard-list",
+                        visible: true,
+                        onClick: () => {
+                            if (window.TimeManagement && typeof window.TimeManagement.openActionQueue === "function") {
+                                window.TimeManagement.openActionQueue();
+                            } else {
+                                console.error("FROM TimeManagement: System kolejki akcji nie jest dostępny");
+                                ui.notifications.error("System kolejki akcji nie jest jeszcze gotowy. Spróbuj ponownie za chwilę.");
+                            }
+                        },
+                        button: true
+                    });
+                    console.log("FROM TimeManagement: Added Action Queue tool");
+                }
+
+                console.log("FROM TimeManagement: Final tools array length:", toolsArray.length);
+                return;
             }
-            
-            // Kontrolka śledzenia agentów - dla wszystkich użytkowników
-            if (!existingTools.includes("agent-tracker")) {
-                toolsArray.push({
-                    name: "agent-tracker",
-                    title: game.i18n.localize("from-time-management.agent-tracker") || "Agent Activity Tracker",
-                    icon: "fas fa-users-cog",
-                    visible: true,
-                    onClick: () => {
-                        if (window.TimeManagement && typeof window.TimeManagement.openAgentTracker === "function") {
-                            window.TimeManagement.openAgentTracker();
-                        } else {
-                            console.error("FROM TimeManagement: System śledzenia agentów nie jest dostępny");
-                            ui.notifications.error("System śledzenia agentów nie jest jeszcze gotowy. Spróbuj ponownie za chwilę.");
-                        }
-                    },
-                    button: true
-                });
-                console.log("FROM TimeManagement: Added Agent Tracker tool");
-            }
-            
-            // Kontrolka kolejki akcji - dla wszystkich użytkowników
-            if (!existingTools.includes("action-queue")) {
-                toolsArray.push({
-                    name: "action-queue",
-                    title: game.i18n.localize("from-time-management.action-queue") || "Action Queue",
-                    icon: "fas fa-clipboard-list",
-                    visible: true,
-                    onClick: () => {
-                        if (window.TimeManagement && typeof window.TimeManagement.openActionQueue === "function") {
-                            window.TimeManagement.openActionQueue();
-                        } else {
-                            console.error("FROM TimeManagement: System kolejki akcji nie jest dostępny");
-                            ui.notifications.error("System kolejki akcji nie jest jeszcze gotowy. Spróbuj ponownie za chwilę.");
-                        }
-                    },
-                    button: true
-                });
-                console.log("FROM TimeManagement: Added Action Queue tool");
-            }
-            
-            console.log("FROM TimeManagement: Final tools array length:", toolsArray.length);
+
+            // Fallback: if neither object nor array, log warning but don't crash
+            console.warn("FROM TimeManagement: toolsArray is not an array or object, type:", typeof toolsArray, "value:", toolsArray);
         }
 
         // Po pełnej inicjalizacji gry wczytaj zapisany czas
