@@ -1129,6 +1129,12 @@ class TimeManagementSystem {
         console.log("FROM TimeManagement: Agent Tracker Dialog rendered");
         console.log("FROM TimeManagement: Dialog element:", this.agentTrackerDialog.element);
         console.log("FROM TimeManagement: Dialog has popout button?", this.agentTrackerDialog.element?.find('.popout').length > 0);
+        
+        // Try to manually add popout button if PopOut module is active
+        if (game.modules.get('popout')?.active && !this.agentTrackerDialog.element?.find('.popout').length) {
+            console.log("FROM TimeManagement: Attempting to manually add popout button");
+            this.addPopoutButton(this.agentTrackerDialog);
+        }
     }
 
     /**
@@ -1618,19 +1624,32 @@ class TimeManagementSystem {
     }
 
     /**
-     * Calculate the start time for an action based on agent's current progress
+     * Manually add popout button to dialog if PopOut module doesn't do it automatically
      */
-    calculateActionStartTime(agentId, actionMode) {
-        const timeSpent = actionMode === 'day' 
-            ? (this.agentDayTimeTracking[agentId] || 0)
-            : (this.agentNightTimeTracking[agentId] || 0);
+    addPopoutButton(dialog) {
+        if (!dialog.element) return;
         
-        // Base time: 6:00 for day, 18:00 for night
-        const baseHour = actionMode === 'day' ? 6 : 18;
-        const startHour = baseHour + Math.floor(timeSpent);
-        const startMinute = Math.floor((timeSpent % 1) * 60);
+        const header = dialog.element.find('.window-header');
+        if (!header.length) return;
         
-        return { hour: startHour % 24, minute: startMinute };
+        // Check if popout button already exists
+        if (header.find('.popout-btn').length > 0) return;
+        
+        // Create popout button
+        const popoutBtn = $('<a class="popout-btn header-button"><i class="fas fa-external-link-alt"></i></a>');
+        popoutBtn.click(() => {
+            console.log("FROM TimeManagement: Manual popout button clicked");
+            // Try to pop out the dialog
+            if (dialog.options.popOut && typeof dialog.popOut === 'function') {
+                dialog.popOut();
+            } else {
+                console.log("FROM TimeManagement: Dialog does not support popOut");
+            }
+        });
+        
+        // Add button to header
+        header.append(popoutBtn);
+        console.log("FROM TimeManagement: Manual popout button added to dialog");
     }
 
     /**
