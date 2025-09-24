@@ -1052,6 +1052,8 @@ class TimeManagementSystem {
      */
     createAgentTrackerDialog() {
         console.log("FROM TimeManagement: Creating agent tracker dialog");
+        console.log("FROM TimeManagement: PopOut module active:", game.modules.get('popout')?.active);
+        console.log("FROM TimeManagement: Game version:", game.version);
 
         const content = this.generateAgentTrackerContent();
 
@@ -1113,8 +1115,20 @@ class TimeManagementSystem {
             classes: ["agent-tracker-dialog"]
         });
 
+        console.log("FROM TimeManagement: Agent Tracker Dialog created with options:", {
+            popOut: true,
+            minimizable: true,
+            classes: ["agent-tracker-dialog"]
+        });
+        console.log("FROM TimeManagement: Dialog popOut property:", this.agentTrackerDialog.options.popOut);
+        console.log("FROM TimeManagement: Dialog minimizable property:", this.agentTrackerDialog.options.minimizable);
+
         this.agentTrackerDialog.render(true);
         this.agentTrackerOpen = true;
+        
+        console.log("FROM TimeManagement: Agent Tracker Dialog rendered");
+        console.log("FROM TimeManagement: Dialog element:", this.agentTrackerDialog.element);
+        console.log("FROM TimeManagement: Dialog has popout button?", this.agentTrackerDialog.element?.find('.popout').length > 0);
     }
 
     /**
@@ -1338,6 +1352,10 @@ class TimeManagementSystem {
      * Creates action queue dialog
      */
     createActionQueueDialog() {
+        console.log("FROM TimeManagement: Creating Action Queue Dialog");
+        console.log("FROM TimeManagement: PopOut module active:", game.modules.get('popout')?.active);
+        console.log("FROM TimeManagement: Game version:", game.version);
+        
         const content = this.generateActionQueueContent();
 
         const buttons = {
@@ -1403,8 +1421,20 @@ class TimeManagementSystem {
             classes: ["action-queue-dialog"]
         });
 
+        console.log("FROM TimeManagement: Action Queue Dialog created with options:", {
+            popOut: true,
+            minimizable: true,
+            classes: ["action-queue-dialog"]
+        });
+        console.log("FROM TimeManagement: Dialog popOut property:", this.actionQueueDialog.options.popOut);
+        console.log("FROM TimeManagement: Dialog minimizable property:", this.actionQueueDialog.options.minimizable);
+
         this.actionQueueDialog.render(true);
         this.actionQueueOpen = true;
+        
+        console.log("FROM TimeManagement: Action Queue Dialog rendered");
+        console.log("FROM TimeManagement: Dialog element:", this.actionQueueDialog.element);
+        console.log("FROM TimeManagement: Dialog has popout button?", this.actionQueueDialog.element?.find('.popout').length > 0);
     }
 
     /**
