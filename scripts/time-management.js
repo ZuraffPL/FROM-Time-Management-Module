@@ -1391,7 +1391,7 @@ class TimeManagementSystem {
                 this.actionQueueDialog = null;
             }
         }, {
-            width: 600,
+            width: game.user.isGM ? 700 : 600, // Wider dialog for GM to accommodate checkbox and delete button
             height: "auto",
             resizable: true,
             classes: ["action-queue-dialog"]
