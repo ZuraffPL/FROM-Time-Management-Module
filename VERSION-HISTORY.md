@@ -1,7 +1,32 @@
 # FROM Time Management System - Version History
 
-## Version 1.2.0 (2025-09-22) - CURRENT RELEASE
-**� FOUNDRY VTT v13 COMPATIBILITY RELEASE**
+## Version 1.3.0 (2025-09-24) - CURRENT RELEASE
+**🎨 UI/UX ENHANCEMENTS & POPOUT SUPPORT RELEASE**
+
+### Major UI/UX Improvements
+- ✅ **Popout Window Support**: All dialogs can be popped out into separate windows for multitasking
+- ✅ **Enhanced Dialog Management**: Better window handling, positioning, and lifecycle management
+- ✅ **Action Queue Visual Fixes**: Fixed button stretching issues and improved text readability
+- ✅ **Completed Action Styling**: Better contrast and visibility for finished actions
+
+### Technical Enhancements
+- Manual popout button implementation for all dialogs
+- Enhanced CSS layout with fixed-width buttons (40px delete buttons)
+- Improved flexbox layouts for action items
+- Better text overflow handling for long action names
+- Comprehensive logging for dialog creation and popout detection
+
+### User Experience Improvements
+- Popout functionality allows keeping multiple dialogs open simultaneously
+- Fixed visual bugs that affected usability
+- Enhanced readability of action names in queue
+- Consistent button sizing across all interfaces
+
+**Impact**: Major UI polish with modern popout support for better multitasking workflows!
+
+---
+
+## Version 1.2.0 (2025-09-22) - FOUNDRY VTT v13 COMPATIBILITY RELEASE
 
 ### Major Compatibility Update
 - ✅ **Full Foundry VTT v13 Support**: Complete compatibility with latest Foundry version
@@ -172,7 +197,8 @@
 
 | Version | Foundry VTT | Key Feature | Status |
 |---------|-------------|-------------|---------|
-| 1.2.0 | v12.331 - v13.348 | Foundry v13 Support | ✅ Current |
+| 1.3.0 | v12.331 - v13.348 | UI/UX & Popout | ✅ Current |
+| 1.2.0 | v12.331 - v13.348 | Foundry v13 Support | ✅ Stable |
 | 1.1.0 | v12.331+ | Multiplayer Sync | ✅ Stable |
 | 1.0.6 | v12.331+ | Bug Fixes | ✅ Stable |
 | 1.0.5 | v12.331+ | File Storage | ✅ Stable |
@@ -183,11 +209,16 @@
 
 ## Upgrade Path Summary
 
-**From any version → 1.2.0**: 
+**From any version → 1.3.0**: 
 - ✅ Seamless upgrade with no data loss
 - ✅ All previous bugs automatically fixed
-- ✅ Full Foundry v13 compatibility
-- ✅ Enhanced reliability and performance
+- ✅ Enhanced UI/UX with popout support
+- ✅ Visual improvements and better usability
 - ✅ Zero configuration required
 
-**Recommended Action**: Update to v1.2.0 immediately for Foundry v13 compatibility!
+**From 1.2.0 → 1.3.0**:
+- ✅ UI polish and popout functionality added
+- ✅ Visual bug fixes applied
+- ✅ Enhanced dialog management
+
+**Recommended Action**: Update to v1.3.0 immediately for the best user experience with popout support!

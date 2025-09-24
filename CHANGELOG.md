@@ -5,6 +5,74 @@ All notable changes to the FROM Time Management System will be documented in thi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.0] - 2025-09-24
+
+### 🎨 UI/UX ENHANCEMENTS & POPOUT SUPPORT
+
+This release focuses on visual improvements and enhanced user experience with popout window support for better multitasking during gameplay.
+
+### Added
+- **Popout Window Support**: All dialog windows can now be popped out into separate browser windows
+  - Manual popout button added to dialog headers when PopOut module is active
+  - Enhanced compatibility with PopOut module for seamless window management
+  - Independent window positioning, sizing, and focus management
+  - Perfect for multitasking during extended gaming sessions
+
+- **Enhanced Dialog Management**: Improved window handling and user experience
+  - Automatic popout button detection and manual fallback implementation
+  - Better dialog positioning and sizing for optimal workflow
+  - Enhanced window state management and restoration
+
+### Enhanced
+- **Action Queue Visual Improvements**: Better visual hierarchy and readability
+  - Fixed delete button sizing with consistent 40px width to prevent stretching
+  - Improved action name visibility with proper text wrapping and overflow handling
+  - Enhanced completed action styling with better contrast and readability
+  - Optimized layout spacing and padding for cleaner appearance
+
+- **Dialog Layout Optimization**: Responsive design improvements
+  - Automatic dialog width adjustment based on content (max 900px)
+  - Reduced margins and padding for more efficient space usage
+  - Better button alignment and visual consistency across all dialogs
+  - Improved mobile and tablet responsiveness
+
+### Fixed
+- **Action Queue Layout Issues**: Resolved visual and functional problems
+  - Fixed delete button stretching by implementing fixed width constraints
+  - Corrected action name visibility issues with improved CSS text properties
+  - Fixed dialog overflow problems with enhanced max-width handling
+  - Resolved layout cramping when all UI elements are present (GM view)
+
+- **Completed Action Display**: Enhanced readability of finished actions
+  - Changed completed action text color from barely visible gray to dark green
+  - Maintained visual distinction while improving accessibility
+  - Better contrast ratio for users with visual impairments
+  - Consistent styling with active action appearance
+
+### Technical Changes
+- **CSS Layout Improvements**: Modern flexbox optimizations
+  - Added `flex-shrink: 0` to all interactive elements to prevent unwanted stretching
+  - Implemented `min-width` constraints for action info sections
+  - Enhanced text overflow handling with `word-wrap` and `overflow: visible`
+  - Optimized padding and margin values for better space utilization
+
+- **Dialog System Enhancements**: Better window management
+  - Added manual popout button functionality for PopOut module compatibility
+  - Enhanced dialog creation with better option handling
+  - Improved error handling for dialog operations
+  - Better integration with Foundry's window management system
+
+### Developer Notes
+This release addresses the final UI/UX issues and adds modern window management capabilities. The popout functionality greatly improves the gaming experience by allowing GMs and players to keep multiple windows open simultaneously.
+
+**Key Improvements**:
+- Popout windows enable better multitasking during complex scenes
+- Fixed visual issues that were causing layout problems
+- Enhanced accessibility with better color contrast
+- Modern CSS practices for better cross-browser compatibility
+
+**Testing Focus**: Extensive testing of dialog layouts, popout functionality, and visual consistency across different screen sizes and Foundry versions.
+
 ## [1.2.0] - 2025-09-22
 
 ### 🎉 FOUNDRY VTT v13 COMPATIBILITY

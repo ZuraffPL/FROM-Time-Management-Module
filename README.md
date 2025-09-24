@@ -2,9 +2,15 @@
 
 A comprehensive time management module for Delta Green RPG sessions in Foundry VTT, inspired by the mechanics of the FROM TV series.
 
-> **Latest Version: 1.2.0** - � **FOUNDRY VTT v13 COMPATIBILITY**: Full support for Foundry v13 with enhanced scene control registration! Advanced fallback mechanisms ensure controls appear on any version. Perfect reliability across v12-v13. [See release notes](CHANGELOG.md#120---2025-09-22) for complete details.
+> **Latest Version: 1.3.0** - 🎨 **UI/UX ENHANCEMENTS & POPOUT SUPPORT**: Visual improvements, popout window support, and enhanced dialog management for better multitasking! [See release notes](CHANGELOG.md#130---2025-09-24) for complete details.
 
 ## 🚀 Version Highlights
+
+### v1.3.0 - UI/UX & Popout Support
+- ✅ **Popout Window Support** - All dialogs can be popped out into separate windows
+- ✅ **Enhanced Dialog Management** - Better window handling and positioning
+- ✅ **Action Queue Visual Fixes** - Fixed button stretching and improved readability
+- ✅ **Completed Action Styling** - Better contrast and visibility for finished actions
 
 ### v1.2.0 - Foundry v13 Ready
 - ✅ **Full Foundry VTT v13 Compatibility** - Enhanced scene control system
