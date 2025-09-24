@@ -165,6 +165,7 @@ class TimeManagementSystem {
                             name: "agent-tracker",
                             title: game.i18n.localize("from-time-management.agent-tracker") || "Agent Activity Tracker",
                             icon: "fas fa-users-cog",
+                            visible: true,
                             onClick: () => {
                                 if (window.TimeManagement && typeof window.TimeManagement.openAgentTracker === "function") {
                                     window.TimeManagement.openAgentTracker();
@@ -184,6 +185,7 @@ class TimeManagementSystem {
                             name: "action-queue",
                             title: game.i18n.localize("from-time-management.action-queue") || "Action Queue",
                             icon: "fas fa-clipboard-list",
+                            visible: true,
                             onClick: () => {
                                 if (window.TimeManagement && typeof window.TimeManagement.openActionQueue === "function") {
                                     window.TimeManagement.openActionQueue();
@@ -234,6 +236,7 @@ class TimeManagementSystem {
                     name: "agent-tracker",
                     title: game.i18n.localize("from-time-management.agent-tracker") || "Agent Activity Tracker",
                     icon: "fas fa-users-cog",
+                    visible: true,
                     onClick: () => {
                         if (window.TimeManagement && typeof window.TimeManagement.openAgentTracker === "function") {
                             window.TimeManagement.openAgentTracker();
@@ -253,6 +256,7 @@ class TimeManagementSystem {
                     name: "action-queue",
                     title: game.i18n.localize("from-time-management.action-queue") || "Action Queue",
                     icon: "fas fa-clipboard-list",
+                    visible: true,
                     onClick: () => {
                         if (window.TimeManagement && typeof window.TimeManagement.openActionQueue === "function") {
                             window.TimeManagement.openActionQueue();
@@ -280,7 +284,7 @@ class TimeManagementSystem {
             
             // Jeśli kontrolki nie zostały dodane przez getSceneControlButtons, 
             // spróbuj dodać je bezpośrednio do UI po inicjalizacji (Foundry v13)
-            if (game.user.isGM && game.canvas && ui.controls) {
+            if (game.canvas && ui.controls) {
                 console.log("FROM TimeManagement: Ready for alternative control registration if needed");
                 
                 // Spróbuj zarejestrować kontrolki po krótkim opóźnieniu, jeśli nie zostały już dodane
