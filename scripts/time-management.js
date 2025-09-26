@@ -36,8 +36,6 @@ class TimeManagementSystem {
      * Inicjalizacja systemu zarządzania czasem
      */
     static initialize() {
-        console.log("FROM TimeManagement: Inicjalizacja systemu zarządzania czasem");
-        
         // Register world settings
         TimeManagementSystem.registerSettings();
         
@@ -45,61 +43,35 @@ class TimeManagementSystem {
         window.TimeManagement = new TimeManagementSystem();
         
         // Dodajemy kontrolkę do paska narzędzi - kompatybilność z Foundry v13
-        console.log("FROM TimeManagement: Registering getSceneControlButtons hook");
-        
-        // Hook może nie zostać wywołany od razu, więc zarejestrujmy flagę
-        let hookCalled = false;
-        
         Hooks.on("getSceneControlButtons", (controls) => {
             try {
-                hookCalled = true;
-                console.log("FROM TimeManagement: getSceneControlButtons hook called!");
-                console.log("FROM TimeManagement: controls structure:", controls);
-                console.log("FROM TimeManagement: user is GM:", game.user.isGM);
-                
                 // W Foundry v13 struktura została zmieniona z tablicy na obiekt rekordów
                 if (Array.isArray(controls)) {
                     // Foundry v12 i starsze - controls jest tablicą
-                    console.log("FROM TimeManagement: Using array structure (Foundry v12)");
                     let tokenControls = controls.find(c => c.name === "tokens") || controls.find(c => c.name === "token");
                     if (tokenControls && Array.isArray(tokenControls.tools)) {
-                        console.log("FROM TimeManagement: Found token controls in array");
                         addTimeManagementTools(tokenControls.tools);
                     } else {
                         console.warn("FROM TimeManagement: Token controls not found or invalid");
                     }
                 } else if (controls && typeof controls === 'object') {
                     // Foundry v13+ - controls jest obiektem z rekordami
-                    console.log("FROM TimeManagement: Using object structure (Foundry v13)");
-                    
-                    // Sprawdźmy dostępne kontrolki
-                    console.log("FROM TimeManagement: Available controls:", Object.keys(controls));
-                    
                     // W v13 główną kontrolką tokenów jest 'tokens'
                     let targetControl = null;
                     if (controls.tokens) {
                         targetControl = controls.tokens;
-                        console.log("FROM TimeManagement: Found 'tokens' control");
                     } else if (controls.token) {
                         targetControl = controls.token;
-                        console.log("FROM TimeManagement: Found 'token' control");
                     }
                     
                     if (targetControl) {
-                        console.log("FROM TimeManagement: Target control structure:", targetControl);
-                        console.log("FROM TimeManagement: Target control tools:", targetControl.tools);
-                        console.log("FROM TimeManagement: Tools type:", typeof targetControl.tools);
-                        
                         // W Foundry v13 tools może być obiektem zamiast tablicy
                         if (!targetControl.tools) {
-                            console.log("FROM TimeManagement: Creating tools array for target control");
                             targetControl.tools = [];
                         } else if (typeof targetControl.tools === 'object' && !Array.isArray(targetControl.tools)) {
-                            console.log("FROM TimeManagement: Target control has tools object");
                             // Przekaż obiekt bezpośrednio do funkcji
                             addTimeManagementTools(null, targetControl);
                         } else if (Array.isArray(targetControl.tools)) {
-                            console.log("FROM TimeManagement: Target control has tools array");
                             addTimeManagementTools(targetControl.tools);
                         } else {
                             console.warn("FROM TimeManagement: Target control tools is not an array or object:", typeof targetControl.tools);
@@ -107,7 +79,6 @@ class TimeManagementSystem {
                     } else {
                         console.warn("FROM TimeManagement: No suitable token control found");
                         // Jako fallback, spróbujmy dodać nową kategorię kontrolek
-                        console.log("FROM TimeManagement: Attempting fallback - creating FROM control");
                         controls["from-time-management"] = {
                             name: "from-time-management",
                             title: "FROM Time Management",
@@ -129,9 +100,7 @@ class TimeManagementSystem {
         function addTimeManagementTools(toolsArray, targetControl = null) {
             // Handle object-based controls (Foundry v13)
             if (toolsArray === null && targetControl && targetControl.tools && typeof targetControl.tools === 'object') {
-                console.log("FROM TimeManagement: Handling object-based tools directly");
                 const existingToolNames = Object.keys(targetControl.tools);
-                console.log("FROM TimeManagement: Existing tool names:", existingToolNames);
 
                 // Kontrolka zarządzania czasem - tylko dla GM
                 if (game.user.isGM && !existingToolNames.includes("time-management")) {
@@ -149,7 +118,6 @@ class TimeManagementSystem {
                         },
                         button: true
                     };
-                    console.log("FROM TimeManagement: Added Time Management tool to object");
                 }
 
                 // Kontrolka śledzenia agentów - dla wszystkich użytkowników
@@ -169,7 +137,6 @@ class TimeManagementSystem {
                         },
                         button: true
                     };
-                    console.log("FROM TimeManagement: Added Agent Tracker tool to object");
                 }
 
                 // Kontrolka kolejki akcji - dla wszystkich użytkowników
@@ -189,17 +156,13 @@ class TimeManagementSystem {
                         },
                         button: true
                     };
-                    console.log("FROM TimeManagement: Added Action Queue tool to object");
                 }
 
-                console.log("FROM TimeManagement: Final tools object keys:", Object.keys(targetControl.tools));
                 return;
             }
 
             // Handle array-based controls (Foundry v12 and fallback)
             if (Array.isArray(toolsArray)) {
-                console.log("FROM TimeManagement: Adding tools to array, current length:", toolsArray.length);
-
                 // Sprawdź czy narzędzia już istnieją, żeby uniknąć duplikatów
                 const existingTools = toolsArray.map(tool => tool.name);
 
@@ -219,7 +182,6 @@ class TimeManagementSystem {
                         },
                         button: true
                     });
-                    console.log("FROM TimeManagement: Added Time Management tool");
                 }
 
                 // Kontrolka śledzenia agentów - dla wszystkich użytkowników
@@ -239,7 +201,6 @@ class TimeManagementSystem {
                         },
                         button: true
                     });
-                    console.log("FROM TimeManagement: Added Agent Tracker tool");
                 }
 
                 // Kontrolka kolejki akcji - dla wszystkich użytkowników
@@ -259,10 +220,8 @@ class TimeManagementSystem {
                         },
                         button: true
                     });
-                    console.log("FROM TimeManagement: Added Action Queue tool");
                 }
 
-                console.log("FROM TimeManagement: Final tools array length:", toolsArray.length);
                 return;
             }
 
@@ -272,41 +231,20 @@ class TimeManagementSystem {
 
         // Po pełnej inicjalizacji gry wczytaj zapisany czas
         Hooks.once("ready", async () => {
-            console.log("FROM TimeManagement: [INIT] Ready hook - User:", game.user?.name, "| isGM:", game.user?.isGM);
-            
-            // Dodatkowa rejestracja dla Foundry v13 - używaj nowego hooka activateSceneControls
+                console.log("FROM TimeManagement: Ready hook - initializing system");            // Dodatkowa rejestracja dla Foundry v13 - używaj nowego hooka activateSceneControls
             Hooks.on("activateSceneControls", (controls) => {
-                console.log("FROM TimeManagement: activateSceneControls hook fired", controls);
             });
             
             // Jeśli kontrolki nie zostały dodane przez getSceneControlButtons, 
             // spróbuj dodać je bezpośrednio do UI po inicjalizacji (Foundry v13)
             if (game.canvas && ui.controls) {
-                console.log("FROM TimeManagement: Ready for alternative control registration if needed");
-                
                 // Spróbuj zarejestrować kontrolki po krótkim opóźnieniu, jeśli nie zostały już dodane
                 setTimeout(() => {
-                    console.log("FROM TimeManagement: [FALLBACK] Checking if scene controls need manual registration...");
-                    console.log("FROM TimeManagement: [FALLBACK] getSceneControlButtons hook was called:", hookCalled);
-                    
-                    // Jeśli hook nie został wywołany, to znaczy że musimy użyć alternatywnej metody
-                    if (!hookCalled) {
-                        console.log("FROM TimeManagement: [FALLBACK] Main hook never called, using direct registration");
-                        createOwnControlCategory();
-                        return;
-                    }
                     if (ui.controls && ui.controls.controls) {
-                        console.log("FROM TimeManagement: [FALLBACK] Current scene controls:", Object.keys(ui.controls.controls));
-                        
                         // Sprawdź czy nasze narzędzia istnieją w głównej kontrolce tokens
                         const tokensControl = ui.controls.controls.tokens;
-                        console.log("FROM TimeManagement: [FALLBACK] Tokens control found:", !!tokensControl);
                         
                         if (tokensControl && tokensControl.tools) {
-                            console.log("FROM TimeManagement: [FALLBACK] Tokens control tools:", tokensControl.tools);
-                            console.log("FROM TimeManagement: [FALLBACK] Tools type:", typeof tokensControl.tools);
-                            console.log("FROM TimeManagement: [FALLBACK] Tools keys:", Array.isArray(tokensControl.tools) ? tokensControl.tools.map(t => t.name) : Object.keys(tokensControl.tools));
-                            
                             // Sprawdź czy nasze narzędzia już istnieją
                             let hasTimeManagement, hasAgentTracker, hasActionQueue;
                             
@@ -322,16 +260,8 @@ class TimeManagementSystem {
                                 hasActionQueue = "action-queue" in tokensControl.tools;
                             }
                             
-                            console.log("FROM TimeManagement: [FALLBACK] Tool presence check:", {
-                                timeManagement: hasTimeManagement,
-                                agentTracker: hasAgentTracker,
-                                actionQueue: hasActionQueue
-                            });
-                            
                             // Jeśli brakuje jakichś narzędzi, dodaj je
                             if (!hasAgentTracker || !hasActionQueue || (game.user.isGM && !hasTimeManagement)) {
-                                console.log("FROM TimeManagement: [FALLBACK] Some tools missing, adding them manually");
-                                
                                 // Spróbuj dodać narzędzia bezpośrednio
                                 if (Array.isArray(tokensControl.tools)) {
                                     addTimeManagementTools(tokensControl.tools);
@@ -340,25 +270,18 @@ class TimeManagementSystem {
                                 }
                                 
                                 // Wymusza ponowne renderowanie
-                                console.log("FROM TimeManagement: [FALLBACK] Forcing UI refresh");
                                 ui.controls.render(true);
-                            } else {
-                                console.log("FROM TimeManagement: [FALLBACK] All tools found, no action needed");
                             }
                         } else {
-                            console.log("FROM TimeManagement: [FALLBACK] No tokens control found or no tools, creating own category");
                             createOwnControlCategory();
                         }
                     } else {
-                        console.log("FROM TimeManagement: [FALLBACK] No controls structure found, creating own category");
                         createOwnControlCategory();
                     }
                 }, 3000);
                 
                 // Dodatkowy fallback z większym opóźnieniem
                 setTimeout(() => {
-                    console.log("FROM TimeManagement: [FINAL FALLBACK] Last chance check for missing tools...");
-                    
                     if (ui.controls && ui.controls.controls && ui.controls.controls.tokens) {
                         const tokensControl = ui.controls.controls.tokens;
                         const toolsExist = tokensControl.tools && 
@@ -367,10 +290,7 @@ class TimeManagementSystem {
                                 "agent-tracker" in tokensControl.tools);
                         
                         if (!toolsExist) {
-                            console.log("FROM TimeManagement: [FINAL FALLBACK] Tools still missing, creating own category");
                             createOwnControlCategory();
-                        } else {
-                            console.log("FROM TimeManagement: [FINAL FALLBACK] Tools are present");
                         }
                     }
                 }, 6000);
@@ -382,14 +302,12 @@ class TimeManagementSystem {
                 
                 // Dodatkowa rejestracja socket po krótkim opóźnieniu
                 setTimeout(() => {
-                    console.log("FROM TimeManagement: [INIT] Additional socket check for:", game.user?.name);
                     if (!window.TimeManagement.socketInitialized) {
-                        console.log("FROM TimeManagement: [INIT] Socket not initialized, retrying...");
                         window.TimeManagement.initializeSocket();
                     }
                 }, 2000);
                 
-                console.log("FROM TimeManagement: System zarządzania czasem jest gotowy");
+                console.log("FROM TimeManagement: Ready hook - initializing system");
             }
         });
     }
@@ -479,8 +397,6 @@ class TimeManagementSystem {
      * Otwiera dialog zarządzania czasem
      */
     openDialog() {
-        console.log("FROM TimeManagement: Próba otwarcia dialogu, isOpen:", this.isOpen);
-        
         if (this.isOpen && this.dialog) {
             this.dialog.bringToTop();
             return;
@@ -491,7 +407,6 @@ class TimeManagementSystem {
             return;
         }
 
-        console.log("FROM TimeManagement: Tworzenie nowego dialogu");
         this.createTimeManagementDialog();
     }
 
@@ -506,8 +421,6 @@ class TimeManagementSystem {
      * Tworzy dialog zarządzania czasem
      */
     createTimeManagementDialog() {
-        console.log("FROM TimeManagement: Tworzenie dialogu zarządzania czasem");
-
         const content = this.generateDialogContent();
 
         this.dialog = new Dialog({
@@ -783,8 +696,6 @@ class TimeManagementSystem {
         this.agentTimeTracking = {};
         this.agentDayTimeTracking = {};
         this.agentNightTimeTracking = {};
-        
-        console.log("FROM TimeManagement: Reset all agent progress bars");
     }
 
     /**
@@ -971,8 +882,6 @@ class TimeManagementSystem {
      * Otwiera okno śledzenia agentów
      */
     openAgentTracker() {
-        console.log("FROM TimeManagement: Opening Agent Tracker");
-        
         // Ensure socket is initialized for players
         if (!game.user.isGM && !this.socketInitialized) {
             console.log("FROM TimeManagement: [SOCKET] Player socket not initialized, initializing now...");
@@ -1056,10 +965,6 @@ class TimeManagementSystem {
      * Tworzy dialog śledzenia agentów
      */
     createAgentTrackerDialog() {
-        console.log("FROM TimeManagement: Creating agent tracker dialog");
-        console.log("FROM TimeManagement: PopOut module active:", game.modules.get('popout')?.active);
-        console.log("FROM TimeManagement: Game version:", game.version);
-
         const content = this.generateAgentTrackerContent();
 
         // Different buttons for GM and players
@@ -1120,20 +1025,8 @@ class TimeManagementSystem {
             classes: ["agent-tracker-dialog"]
         });
 
-        console.log("FROM TimeManagement: Agent Tracker Dialog created with options:", {
-            popOut: true,
-            minimizable: true,
-            classes: ["agent-tracker-dialog"]
-        });
-        console.log("FROM TimeManagement: Dialog popOut property:", this.agentTrackerDialog.options.popOut);
-        console.log("FROM TimeManagement: Dialog minimizable property:", this.agentTrackerDialog.options.minimizable);
-
         this.agentTrackerDialog.render(true);
         this.agentTrackerOpen = true;
-        
-        console.log("FROM TimeManagement: Agent Tracker Dialog rendered");
-        console.log("FROM TimeManagement: Dialog element:", this.agentTrackerDialog.element);
-        console.log("FROM TimeManagement: Dialog has popout button?", this.agentTrackerDialog.element?.find('.popout').length > 0);
         
         // Try to manually add popout button if PopOut module is active
         if (game.modules.get('popout')?.active && !this.agentTrackerDialog.element?.find('.popout').length) {
@@ -1266,8 +1159,6 @@ class TimeManagementSystem {
             
             this.adjustAgentTime(agentId, adjustment);
         });
-        
-        console.log("FROM TimeManagement: Agent tracker listeners attached");
     }
 
     /**
@@ -1275,13 +1166,10 @@ class TimeManagementSystem {
      */
     refreshAgentTracker() {
         if (this.agentTrackerOpen && this.agentTrackerDialog) {
-            console.log("FROM TimeManagement: Refreshing Agent Tracker - window is open");
             const newContent = this.generateAgentTrackerContent();
             this.agentTrackerDialog.data.content = newContent;
             this.agentTrackerDialog.render();
-            console.log("FROM TimeManagement: Agent Tracker refreshed");
         } else {
-            console.log("FROM TimeManagement: Agent Tracker not open - skipping refresh");
         }
     }
 
@@ -1301,11 +1189,8 @@ class TimeManagementSystem {
      * Forces refresh of all open windows
      */
     forceRefreshAllWindows() {
-        console.log("FROM TimeManagement: Force refreshing all windows...");
-        
         // Refresh Agent Tracker
         if (this.agentTrackerOpen && this.agentTrackerDialog) {
-            console.log("FROM TimeManagement: Force refresh Agent Tracker");
             try {
                 const newContent = this.generateAgentTrackerContent();
                 this.agentTrackerDialog.data.content = newContent;
@@ -1317,7 +1202,6 @@ class TimeManagementSystem {
         
         // Refresh Action Queue
         if (this.actionQueueOpen && this.actionQueueDialog) {
-            console.log("FROM TimeManagement: Force refresh Action Queue");
             try {
                 const newContent = this.generateActionQueueContent();
                 this.actionQueueDialog.data.content = newContent;
@@ -1330,23 +1214,18 @@ class TimeManagementSystem {
         
         // Refresh Main Dialog
         if (this.isOpen && this.dialog) {
-            console.log("FROM TimeManagement: Force refresh Main Dialog");
             try {
                 this.dialog.render(true);
             } catch (error) {
                 console.error("FROM TimeManagement: Error during force refresh Main Dialog:", error);
             }
         }
-        
-        console.log("FROM TimeManagement: Force refresh of all windows completed");
     }
 
     /**
      * Opens action queue window
      */
     openActionQueue() {
-        console.log("FROM TimeManagement: Opening Action Queue");
-        
         if (this.actionQueueOpen && this.actionQueueDialog) {
             this.actionQueueDialog.bringToTop();
             return;
@@ -1363,10 +1242,6 @@ class TimeManagementSystem {
      * Creates action queue dialog
      */
     createActionQueueDialog() {
-        console.log("FROM TimeManagement: Creating Action Queue Dialog");
-        console.log("FROM TimeManagement: PopOut module active:", game.modules.get('popout')?.active);
-        console.log("FROM TimeManagement: Game version:", game.version);
-        
         const content = this.generateActionQueueContent();
 
         const buttons = {
@@ -1432,20 +1307,8 @@ class TimeManagementSystem {
             classes: ["action-queue-dialog"]
         });
 
-        console.log("FROM TimeManagement: Action Queue Dialog created with options:", {
-            popOut: true,
-            minimizable: true,
-            classes: ["action-queue-dialog"]
-        });
-        console.log("FROM TimeManagement: Dialog popOut property:", this.actionQueueDialog.options.popOut);
-        console.log("FROM TimeManagement: Dialog minimizable property:", this.actionQueueDialog.options.minimizable);
-
         this.actionQueueDialog.render(true);
         this.actionQueueOpen = true;
-        
-        console.log("FROM TimeManagement: Action Queue Dialog rendered");
-        console.log("FROM TimeManagement: Dialog element:", this.actionQueueDialog.element);
-        console.log("FROM TimeManagement: Dialog has popout button?", this.actionQueueDialog.element?.find('.popout').length > 0);
     }
 
     /**
@@ -1916,9 +1779,9 @@ class TimeManagementSystem {
                 }
                 
                 console.log("FROM TimeManagement: Loaded agent tracking data:", {
-                    total: this.agentTimeTracking,
-                    day: this.agentDayTimeTracking,
-                    night: this.agentNightTimeTracking,
+                    total: Object.keys(this.agentTimeTracking).length,
+                    day: Object.keys(this.agentDayTimeTracking).length,
+                    night: Object.keys(this.agentNightTimeTracking).length,
                     mode: this.trackingMode
                 });
             }
@@ -1940,7 +1803,6 @@ class TimeManagementSystem {
         this.saveAgentTrackingToSettings();
         this.emitAgentTrackingUpdate();
         this.refreshAgentTracker();
-        console.log("FROM TimeManagement: Reset all agent time tracking (day and night)");
     }
 
     /**
@@ -2231,7 +2093,6 @@ class TimeManagementSystem {
         this.emitAgentTrackingUpdate();
 
         ui.notifications.info(`Added action "${actionName}" (${actionCost}h) for ${agent.name}`);
-        console.log(`FROM TimeManagement: Added action "${actionName}" for agent ${agent.name}`);
     }
 
     /**
@@ -2395,7 +2256,6 @@ class TimeManagementSystem {
                 const savedArchive = game.settings.get('from-time-management', 'actionArchive');
                 if (savedArchive && typeof savedArchive === 'object') {
                     this.actionArchive = savedArchive;
-                    console.log(`FROM TimeManagement: Loaded action archive from settings:`, this.actionArchive);
                     console.log(`FROM TimeManagement: Archive contains ${Object.keys(this.actionArchive).length} agents`);
                 } else {
                     console.log("FROM TimeManagement: No saved action archive found, initializing empty");
@@ -2412,10 +2272,6 @@ class TimeManagementSystem {
      * Open agent archive window
      */
     openAgentArchive(agentId, agentName) {
-        console.log(`FROM TimeManagement: Opening archive for agent ${agentName}`);
-        console.log(`FROM TimeManagement: Current archive data for agent:`, this.actionArchive[agentId]);
-        console.log(`FROM TimeManagement: Full archive:`, this.actionArchive);
-        
         // If archive window already open for this agent, bring to top
         if (this.agentArchiveDialogs[agentId]) {
             this.agentArchiveDialogs[agentId].bringToTop();
@@ -2449,7 +2305,6 @@ class TimeManagementSystem {
             render: (html) => this.attachAgentArchiveEventListeners(html, agentId),
             close: () => {
                 delete this.agentArchiveDialogs[agentId];
-                console.log(`FROM TimeManagement: Closed archive for agent ${agentName}`);
             }
         }, {
             classes: ["dialog", "time-management-archive-dialog"],
@@ -2819,12 +2674,6 @@ class TimeManagementSystem {
                 actionArchive: this.actionArchive
             };
 
-            console.log(`FROM TimeManagement: [SYNC] Emitting agent tracking update to all players:`, {
-                agentTimeTracking: data.agentTimeTracking,
-                trackingMode: data.trackingMode,
-                currentTime: data.currentTime
-            });
-
             game.socket.emit("module.from-time-management", {
                 operation: "updateAgentTracking",
                 data: data
@@ -2870,17 +2719,11 @@ class TimeManagementSystem {
      * Handle socket messages
      */
     handleSocketMessage(data) {
-        console.log("FROM TimeManagement: [SOCKET] Processing message:", data.operation, "| User:", game.user.name, "| isGM:", game.user.isGM);
-        
         try {
             switch (data.operation) {
                 case "updateAgentTracking":
-                    console.log("FROM TimeManagement: [SOCKET] updateAgentTracking - User:", game.user.name, "| isGM:", game.user.isGM);
                     if (!game.user.isGM) {
-                        console.log("FROM TimeManagement: [SOCKET] Player receiving agent tracking update");
                         this.updateDataFromGM(data.data);
-                    } else {
-                        console.log("FROM TimeManagement: [SOCKET] GM ignoring own message");
                     }
                     break;
                     
@@ -2909,7 +2752,6 @@ class TimeManagementSystem {
                     break;
                     
                 case "forceRefreshWindows":
-                    console.log("FROM TimeManagement: Received force refresh request");
                     this.forceRefreshAllWindows();
                     
                     // Also update UI notifications if available
@@ -2918,7 +2760,6 @@ class TimeManagementSystem {
                             if (this.actionQueue && this.actionQueue.length > 0) {
                                 const recentActions = this.actionQueue.filter(a => !a.completed && (Date.now() - a.timestamp) < 5000);
                                 if (recentActions.length > 0) {
-                                    console.log("FROM TimeManagement: Showing notification about recent actions");
                                     // Just refresh, don't spam notifications
                                 }
                             }
@@ -2954,8 +2795,6 @@ class TimeManagementSystem {
                 data: data,
                 userId: userId
             });
-            
-            console.log("FROM TimeManagement: Sent current data to user:", userId, "including archive with", Object.keys(this.actionArchive).length, "agents");
         }
     }
 
@@ -2990,7 +2829,6 @@ class TimeManagementSystem {
             await this.addActionToQueue(agentId, actionName, actionCost, trackingMode);
             
             // Extra emit to ensure all clients get the update immediately
-            console.log("FROM TimeManagement: Sending extra update after processing player action request");
             this.emitAgentTrackingUpdate();
         }
     }
@@ -3002,12 +2840,6 @@ class TimeManagementSystem {
         if (game.user.isGM) {
             return;
         }
-        
-        console.log("FROM TimeManagement: [PLAYER SYNC] Updating data from GM:", {
-            agentTimeTracking: data.agentTimeTracking,
-            trackingMode: data.trackingMode,
-            currentTime: data.currentTime
-        });
         
         this.agentTimeTracking = data.agentTimeTracking || {};
         this.agentDayTimeTracking = data.agentDayTimeTracking || {};
@@ -3032,7 +2864,6 @@ class TimeManagementSystem {
         // Extra refresh for agent tracker to ensure progress bars update
         setTimeout(() => {
             if (this.agentTrackerOpen && this.agentTrackerDialog) {
-                console.log("FROM TimeManagement: Extra refresh for agent tracker progress bars");
                 const newContent = this.generateAgentTrackerContent();
                 this.agentTrackerDialog.data.content = newContent;
                 this.agentTrackerDialog.render(true);
@@ -3065,8 +2896,6 @@ class TimeManagementSystem {
      * Add time to current time
      */
     addTime(hours) {
-        console.log(`FROM TimeManagement: Adding ${hours} hours to current time`);
-        
         const minutesToAdd = hours * 60;
         this.currentTime.minutes += minutesToAdd;
         
@@ -3085,16 +2914,12 @@ class TimeManagementSystem {
         
         this.emitTimeUpdate();
         this.refreshMainDialog();
-        
-        console.log(`FROM TimeManagement: Current time is now ${this.formatCurrentTime()}`);
     }
 
     /**
      * Set current time
      */
     setTime(hours, minutes, day = null) {
-        console.log(`FROM TimeManagement: Setting time to ${hours}:${minutes}${day ? `, day ${day}` : ''}`);
-        
         this.currentTime.hours = Math.max(0, Math.min(23, parseInt(hours) || 0));
         this.currentTime.minutes = Math.max(0, Math.min(59, parseInt(minutes) || 0));
         
@@ -3105,8 +2930,6 @@ class TimeManagementSystem {
         this.saveCurrentTimeToSettings();
         this.emitTimeUpdate();
         this.refreshMainDialog();
-        
-        console.log(`FROM TimeManagement: Time set to ${this.formatCurrentTime()}`);
     }
 
     /**
@@ -3226,8 +3049,6 @@ class TimeManagementSystem {
             if (timeDisplay.length > 0) {
                 timeDisplay.text(`Current time: ${this.formatCurrentTime()}`);
             }
-            
-            console.log("FROM TimeManagement: Main dialog refreshed");
         }
     }
 
