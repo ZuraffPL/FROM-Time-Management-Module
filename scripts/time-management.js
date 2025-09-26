@@ -731,6 +731,7 @@ class TimeManagementSystem {
                     </p>
                     <ul style="margin: 10px 0; padding-left: 20px; font-size: 13px;">
                         <li>Increase the day counter by 1</li>
+                        <li>Set time to 6:00 AM (start of day)</li>
                         <li>Reset all agent progress bars (day and night)</li>
                         <li>Send a message to chat</li>
                     </ul>
@@ -743,10 +744,14 @@ class TimeManagementSystem {
                 // Zwiększ dzień
                 this.currentTime.day += 1;
                 
+                // Ustaw godzinę na 6:00 (początek dnia)
+                this.currentTime.hours = 6;
+                this.currentTime.minutes = 0;
+                
                 // Resetuj paski postępu wszystkich agentów
                 this.resetAllAgentsProgress();
                 
-                // Automatycznie ustaw tracking mode na podstawie aktualnej godziny
+                // Automatycznie ustaw tracking mode na podstawie nowej godziny (będzie dzień)
                 this.updateTrackingModeBasedOnTime();
                 
                 // Zapisz zmiany
