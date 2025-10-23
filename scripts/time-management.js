@@ -1017,8 +1017,8 @@ class TimeManagementSystem {
                 this.agentTrackerDialog = null;
             }
         }, {
-            width: "auto",
-            height: "auto",
+            width: 600,
+            height: 500,
             resizable: true,
             popOut: true, // Allow dialog to be popped out
             minimizable: true, // Allow minimizing

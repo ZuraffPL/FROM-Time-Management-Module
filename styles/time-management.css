@@ -315,8 +315,8 @@
 }
 
 .agent-avatar {
-    width: 48px;
-    height: 48px;
+    width: clamp(40px, 6vw, 60px);
+    height: clamp(40px, 6vw, 60px);
     border-radius: 50%;
     border: 2px solid var(--tm-border-color);
     object-fit: cover;
@@ -332,7 +332,7 @@
 
 .agent-name {
     font-weight: bold;
-    font-size: 14px;
+    font-size: clamp(0.75rem, 1.2vw + 0.2rem, 1rem);
     color: var(--tm-primary-color);
     font-family: var(--tm-header-font);
     text-transform: uppercase;
@@ -340,7 +340,7 @@
 }
 
 .agent-player {
-    font-size: 12px;
+    font-size: clamp(0.65rem, 1vw + 0.1rem, 0.85rem);
     color: var(--tm-secondary-text);
     font-style: italic;
 }
@@ -354,8 +354,8 @@
 
 .time-progress-bar {
     display: flex;
-    gap: 2px;
-    height: 12px;
+    gap: clamp(1px, 0.2vw, 3px);
+    height: clamp(10px, 1.5vh, 16px);
 }
 
 .time-segment {
@@ -364,6 +364,7 @@
     border: 1px solid #ccc;
     border-radius: 2px;
     transition: background-color 0.3s ease;
+    min-width: clamp(8px, 1vw, 15px);
 }
 
 .time-segment.active {
@@ -391,7 +392,7 @@
 }
 
 .time-progress-label {
-    font-size: 11px;
+    font-size: clamp(0.6rem, 1vw + 0.1rem, 0.8rem);
     color: var(--tm-secondary-text);
     text-align: center;
     font-family: var(--tm-header-font);
@@ -429,8 +430,8 @@
 }
 
 .add-action-btn {
-    padding: 5px 8px;
-    font-size: 11px;
+    padding: clamp(4px, 0.5vh, 8px) clamp(6px, 1vw, 12px);
+    font-size: clamp(0.6rem, 1vw + 0.1rem, 0.8rem);
     background: linear-gradient(135deg, var(--tm-accent-color), #2E7D32);
     border: 1px solid #2E7D32;
     color: white;
@@ -441,7 +442,7 @@
     margin: 0;
     display: inline-block;
     flex: 0 0 auto;
-    max-width: 80px;
+    max-width: none;
 }
 
 .add-action-btn:hover {
@@ -450,8 +451,8 @@
 }
 
 .reset-day-btn {
-    padding: 5px 8px;
-    font-size: 11px;
+    padding: clamp(4px, 0.5vh, 8px) clamp(6px, 1vw, 12px);
+    font-size: clamp(0.6rem, 1vw + 0.1rem, 0.8rem);
     background: linear-gradient(135deg, #FF9800, #E65100);
     border: 1px solid #E65100;
     color: white;
@@ -462,7 +463,7 @@
     margin: 0;
     display: inline-block;
     flex: 0 0 auto;
-    max-width: 75px;
+    max-width: none;
 }
 
 .reset-day-btn:hover {
@@ -718,11 +719,11 @@
     color: white;
     border: 1px solid #37474F;
     border-radius: 3px;
-    padding: 3px 6px;
-    font-size: 10px;
+    padding: clamp(3px, 0.4vh, 6px) clamp(5px, 0.8vw, 10px);
+    font-size: clamp(0.55rem, 0.9vw + 0.1rem, 0.75rem);
     cursor: pointer;
     transition: all 0.2s ease;
-    min-width: 40px;
+    min-width: clamp(35px, 5vw, 50px);
     text-align: center;
 }
 
@@ -872,6 +873,75 @@
     min-width: 450px;
     max-width: 900px; /* Increased max-width to accommodate GM controls */
     width: fit-content;
+}
+
+/* Make agent tracker dialog resizable with scaling content */
+.agent-tracker-dialog {
+    resize: both;
+    min-width: 450px;
+    min-height: 300px;
+}
+
+.agent-tracker-dialog .window-content {
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.agent-tracker-dialog .dialog-content {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+/* Scale content based on dialog size */
+.agent-tracker-window {
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    font-size: clamp(0.75rem, 1vw + 0.5rem, 1rem); /* Responsive font size */
+}
+
+/* Make headers scale proportionally */
+.agent-tracker-header h2 {
+    font-size: clamp(1rem, 2vw + 0.5rem, 1.5rem);
+}
+
+/* Scale buttons */
+.mode-button {
+    font-size: clamp(0.7rem, 1vw + 0.3rem, 0.9rem);
+    padding: clamp(6px, 1vh, 12px) clamp(12px, 2vw, 20px);
+}
+
+/* Make agent list scrollable if needed */
+.agent-list {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+/* Scale agent entries */
+.agent-entry {
+    font-size: inherit;
+}
+
+.agent-entry h4 {
+    font-size: clamp(0.9rem, 1.5vw + 0.3rem, 1.2rem);
+}
+
+/* Scale time displays */
+.time-display {
+    font-size: clamp(0.7rem, 1vw + 0.2rem, 0.9rem);
+}
+
+/* Scale action buttons */
+.agent-action-button {
+    font-size: clamp(0.65rem, 1vw + 0.2rem, 0.85rem);
+    padding: clamp(4px, 0.8vh, 8px) clamp(8px, 1.5vw, 12px);
 }
 
 /* Responsive design */
@@ -1067,17 +1137,17 @@
     background: linear-gradient(135deg, #9C27B0, #7B1FA2);
     color: white;
     border: none;
-    padding: 5px 8px;
+    padding: clamp(4px, 0.5vh, 8px) clamp(6px, 1vw, 12px);
     border-radius: 4px;
     cursor: pointer;
-    font-size: 11px;
+    font-size: clamp(0.6rem, 1vw + 0.1rem, 0.8rem);
     transition: all 0.2s ease;
     font-family: var(--tm-font-family);
     white-space: nowrap;
     margin: 0;
     display: inline-block;
     flex: 0 0 auto;
-    max-width: 85px;
+    max-width: none;
 }
 
 .action-archive-btn:hover {
