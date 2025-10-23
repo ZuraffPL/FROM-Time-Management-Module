@@ -774,7 +774,7 @@
     font-weight: bold;
     color: #2E7D32;
     font-family: var(--tm-header-font);
-    font-size: 18px; /* Increased from 16px for better visibility */
+    font-size: clamp(0.9rem, 1.5vw + 0.3rem, 1.3rem);
     line-height: 1.2;
     overflow: visible;
     white-space: normal;
@@ -782,17 +782,18 @@
 }
 
 .action-details {
-    font-size: 14px; /* Increased from 12px for better readability */
+    font-size: clamp(0.75rem, 1.2vw + 0.2rem, 1rem);
     color: var(--tm-secondary-text);
     line-height: 1.4; /* Better line spacing */
 }
 
 .action-cost {
     font-weight: bold;
-    padding: 4px 8px;
+    padding: clamp(4px, 0.5vh, 8px) clamp(6px, 1vw, 12px);
     background: linear-gradient(135deg, #FFC107, #FF8F00);
     color: #8B4513;
     border-radius: 12px;
+    font-size: clamp(0.75rem, 1.2vw + 0.2rem, 1rem);
     font-size: 14px; /* Increased from 11px for better readability */
     margin-left: 5px; /* Reduced from 10px to save space */
     flex-shrink: 0; /* Prevent cost badge from stretching */
@@ -942,6 +943,75 @@
 .agent-action-button {
     font-size: clamp(0.65rem, 1vw + 0.2rem, 0.85rem);
     padding: clamp(4px, 0.8vh, 8px) clamp(8px, 1.5vw, 12px);
+}
+
+/* Make action queue dialog resizable with scaling content */
+.action-queue-dialog {
+    resize: both;
+    min-width: 450px;
+    min-height: 300px;
+}
+
+.action-queue-dialog .window-content {
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.action-queue-dialog .dialog-content {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+/* Scale action queue window content based on dialog size */
+.action-queue-window {
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    font-size: clamp(0.75rem, 1vw + 0.5rem, 1rem);
+}
+
+/* Make queue header scale proportionally */
+.queue-header h2 {
+    font-size: clamp(1rem, 2vw + 0.5rem, 1.5rem);
+}
+
+/* Make action list scrollable if needed */
+.action-list {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+/* Scale action items */
+.action-item {
+    font-size: inherit;
+}
+
+.action-item h4 {
+    font-size: clamp(0.85rem, 1.3vw + 0.3rem, 1.1rem);
+}
+
+/* Scale action descriptions and details */
+.action-description {
+    font-size: clamp(0.7rem, 1vw + 0.2rem, 0.9rem);
+}
+
+.action-time-cost {
+    font-size: clamp(0.65rem, 0.9vw + 0.2rem, 0.85rem);
+}
+
+/* Scale action control buttons */
+.action-complete-btn,
+.action-delete-btn,
+.action-edit-btn {
+    font-size: clamp(0.6rem, 0.9vw + 0.2rem, 0.8rem);
+    padding: clamp(4px, 0.5vh, 8px) clamp(6px, 1vw, 12px);
 }
 
 /* Responsive design */

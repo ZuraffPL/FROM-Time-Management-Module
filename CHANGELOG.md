@@ -5,6 +5,63 @@ All notable changes to the FROM Time Management System will be documented in thi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.0] - 2025-10-23
+
+### 🎯 RESIZABLE DIALOGS WITH DYNAMIC SCALING
+
+This release adds full resizable support to all major dialog windows with intelligent content scaling, perfect for high-resolution displays.
+
+### Added
+- **Resizable Dialog Windows**: All major dialogs now support dynamic resizing
+  - Agent Tracker window can be resized by dragging the bottom-right corner
+  - Action Queue window can be resized by dragging the bottom-right corner
+  - Minimum dimensions enforced (450x300px) to maintain usability
+  - Initial size: 600x500px for optimal viewing
+
+- **Proportional Content Scaling**: All UI elements scale intelligently with window size
+  - Text sizes adjust using clamp() for optimal readability (0.55rem - 1.5rem range)
+  - Buttons, avatars, and progress bars scale proportionally
+  - Responsive font sizes using viewport-based units (vw/vh)
+  - Dynamic padding and spacing based on window dimensions
+
+- **High-Resolution Display Support**: Optimized for 1440p, 4K, and ultrawide monitors
+  - Content remains readable at any window size
+  - No more tiny text on high-resolution displays
+  - Users can customize window size to their preference
+  - Better multitasking support with flexible layouts
+
+### Enhanced
+- **Agent Tracker Scaling**: All elements resize proportionally
+  - Agent avatars: 40px-60px based on window size
+  - Agent names: 0.75rem-1rem responsive font size
+  - Progress bars: 10px-16px height with dynamic segment width
+  - Control buttons: Fully scalable padding and font sizes
+  - Time adjustment controls scale with viewport
+
+- **Action Queue Scaling**: Complete responsive redesign
+  - Action names: 0.9rem-1.3rem for better visibility
+  - Action details: 0.75rem-1rem with improved readability
+  - Action cost badges: Dynamically sized with responsive padding
+  - All buttons scale proportionally with window size
+
+- **Dialog Management**: Improved window behavior
+  - Content scrolls smoothly when exceeding window bounds
+  - Maintains aspect ratio during resize operations
+  - Better overflow handling for long content lists
+  - Optimized for both portrait and landscape orientations
+
+### Technical Improvements
+- Implemented CSS clamp() for min/max value constraints
+- Added viewport-relative units (vw/vh) for dynamic sizing
+- Enhanced flexbox layouts for better content distribution
+- Improved overflow and scroll behavior for nested elements
+
+### Fixed
+- Removed fixed height limits causing unnecessary scrollbars
+  - Agent tracker window no longer has max-height constraint
+  - Action queue window expands dynamically with content
+  - Both windows now resize naturally with their content
+
 ## [1.3.0] - 2025-09-24
 
 ### 🎨 UI/UX ENHANCEMENTS & POPOUT SUPPORT

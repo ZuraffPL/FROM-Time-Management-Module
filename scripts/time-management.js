@@ -1299,8 +1299,8 @@ class TimeManagementSystem {
                 this.actionQueueDialog = null;
             }
         }, {
-            width: "auto", // Let dialog auto-size to content instead of fixed width
-            height: "auto",
+            width: 600,
+            height: 500,
             resizable: true,
             popOut: true, // Allow dialog to be popped out
             minimizable: true, // Allow minimizing

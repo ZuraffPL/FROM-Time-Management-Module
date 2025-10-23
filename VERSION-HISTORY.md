@@ -1,6 +1,46 @@
 # FROM Time Management System - Version History
 
-## Version 1.3.0 (2025-09-24) - CURRENT RELEASE
+## Version 1.4.0 (2025-10-23) - CURRENT RELEASE
+**🎯 RESIZABLE DIALOGS WITH DYNAMIC SCALING RELEASE**
+
+### Major Features
+- ✅ **Fully Resizable Windows**: Agent Tracker and Action Queue dialogs now support free resizing
+- ✅ **Proportional Content Scaling**: All UI elements scale intelligently with window size
+- ✅ **High-Resolution Display Support**: Optimized for 1440p, 4K, and ultrawide monitors
+- ✅ **Dynamic Font Sizing**: Text scales using clamp() for optimal readability at any size
+
+### Technical Implementation
+- Implemented CSS clamp() with viewport-relative units (vw/vh)
+- Responsive font sizes from 0.55rem to 1.5rem based on element importance
+- Dynamic padding and spacing calculations
+- Enhanced flexbox layouts with proper overflow handling
+- Initial dialog size: 600x500px with 450x300px minimum constraints
+
+### Scaling Features by Component
+**Agent Tracker:**
+- Agent avatars: 40px-60px responsive sizing
+- Names and details: Fully scalable typography
+- Progress bars: 10px-16px height with dynamic segments
+- All buttons scale proportionally with window
+
+**Action Queue:**
+- Action names: 0.9rem-1.3rem for maximum visibility
+- Details text: 0.75rem-1rem with excellent readability
+- Cost badges: Dynamic sizing with responsive padding
+- Control buttons: Proportional scaling
+
+### User Experience Improvements
+- Users can resize windows to their preference on any display
+- No more tiny text on high-resolution monitors
+- Perfect for multitasking with multiple windows
+- Content automatically reflows and scales
+- Smooth scrolling when content exceeds window bounds
+
+**Impact**: Game-changing improvement for high-resolution display users! Windows now adapt perfectly to any screen size.
+
+---
+
+## Version 1.3.0 (2025-09-24)
 **🎨 UI/UX ENHANCEMENTS & POPOUT SUPPORT RELEASE**
 
 ### Major UI/UX Improvements
