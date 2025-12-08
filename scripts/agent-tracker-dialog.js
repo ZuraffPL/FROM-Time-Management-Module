@@ -48,13 +48,39 @@ export async function addActionToQueue(agentId, agentName, actionName, actionCos
     await game.settings.set("from-time-management", "actionQueue", queue);
     
     // WAŻNE: Zaktualizuj czas spędzony przez agenta (dodaj koszt akcji)
-    const newTimeSpent = timeSpent + actionCost;
-    if (trackingMode === 'day') {
-      dayTimes[agentId] = newTimeSpent;
-      await game.settings.set("from-time-management", "agentDayTimeTracking", dayTimes);
+    // Jeśli akcja przekracza porę, rozdziel godziny między dwie pory
+    if (crossesPeriods) {
+      if (trackingMode === 'day') {
+        // Dzień: 6:00-18:00 (12 godzin)
+        const remainingDayTime = 12 - timeSpent; // Ile zostało do końca dnia
+        const overflowToNight = actionCost - remainingDayTime; // Ile przechodzi na noc
+        
+        dayTimes[agentId] = 12; // Dzień wypełniony do maksimum
+        nightTimes[agentId] = (nightTimes[agentId] || 0) + overflowToNight; // Dodaj overflow do nocy
+        
+        await game.settings.set("from-time-management", "agentDayTimeTracking", dayTimes);
+        await game.settings.set("from-time-management", "agentNightTimeTracking", nightTimes);
+      } else {
+        // Noc: 18:00-6:00 (12 godzin, ale liczone jako 18-30)
+        const remainingNightTime = 12 - timeSpent; // Ile zostało do końca nocy
+        const overflowToDay = actionCost - remainingNightTime; // Ile przechodzi na dzień
+        
+        nightTimes[agentId] = 12; // Noc wypełniona do maksimum
+        dayTimes[agentId] = (dayTimes[agentId] || 0) + overflowToDay; // Dodaj overflow do dnia
+        
+        await game.settings.set("from-time-management", "agentDayTimeTracking", dayTimes);
+        await game.settings.set("from-time-management", "agentNightTimeTracking", nightTimes);
+      }
     } else {
-      nightTimes[agentId] = newTimeSpent;
-      await game.settings.set("from-time-management", "agentNightTimeTracking", nightTimes);
+      // Akcja mieści się w bieżącej porze - standardowe dodawanie
+      const newTimeSpent = timeSpent + actionCost;
+      if (trackingMode === 'day') {
+        dayTimes[agentId] = newTimeSpent;
+        await game.settings.set("from-time-management", "agentDayTimeTracking", dayTimes);
+      } else {
+        nightTimes[agentId] = newTimeSpent;
+        await game.settings.set("from-time-management", "agentNightTimeTracking", nightTimes);
+      }
     }
     
     ui.notifications.info(`Dodano akcję "${actionName}" (${actionCost}h) dla ${agent.name}`);
