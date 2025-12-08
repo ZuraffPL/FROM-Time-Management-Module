@@ -183,46 +183,37 @@ export class TimeManagementDialog extends foundry.applications.api.DialogV2 {
       newDayBtn.addEventListener("click", async ev => {
         ev.preventDefault();
         const current = await TimeManagementDialog.getGameTime();
-           if (foundry.applications.api.DialogV2 && typeof foundry.applications.api.DialogV2.confirm === "function") {
-             await foundry.applications.api.DialogV2.confirm({
-          title: t("new-day"),
+        
+        // Use DialogV2.confirm with proper syntax
+        const confirmed = await foundry.applications.api.DialogV2.confirm({
+          window: { title: t("new-day") },
           content: `<div class='new-day-confirm'><h3>🌅 ${t("new-day-confirm")}</h3><p>${t("irreversible-action")}</p></div>`,
-          yes: async () => {
-            const newDay = Number(current.day) + 1;
-            const newHour = 6;
-            const newMinute = 0;
-            const year = current.year;
-            await game.settings.set("from-time-management", "gameTime", JSON.stringify({ day: newDay, hour: newHour, minute: newMinute, year }));
-            await game.settings.set("from-time-management", "trackingMode", "day");
-               this._refreshCurrentTimeDisplay(this.element, true); // Use this.element for consistency
-            ui.notifications?.info(`${t("new-day-started")}`);
-            const msg = `<div class='new-day-chat'><div class='new-day-icon'>🌅</div><div class='new-day-title'>${t("new-day-started")}</div><div class='new-day-desc'>${t("day-label")} ${newDay} • ${t("another-day-cursed")}</div></div>`;
-            ChatMessage.create({ content: msg });
-          },
-          no: () => {},
-          defaultYes: false
-        }, { width: 450 });
-           } else {
-             // Use DialogV2.confirm instead of deprecated Dialog
-             const confirmed = await foundry.applications.api.DialogV2.confirm({
-               window: { title: t("new-day") },
-               content: `<div class='new-day-confirm'><h3>🌅 ${t("new-day-confirm")}</h3><p>${t("irreversible-action")}</p></div>`,
-               rejectClose: false,
-               modal: true
-             });
-             if (confirmed) {
-               const newDay = Number(current.day) + 1;
-               const newHour = 6;
-               const newMinute = 0;
-               const year = current.year;
-               await game.settings.set("from-time-management", "gameTime", JSON.stringify({ day: newDay, hour: newHour, minute: newMinute, year }));
-               await game.settings.set("from-time-management", "trackingMode", "day");
-               this._refreshCurrentTimeDisplay(this.element, true); // Use this.element for consistency
-               ui.notifications?.info(`${t("new-day-started")}`);
-               const msg = `<div class='new-day-chat'><div class='new-day-icon'>🌅</div><div class='new-day-title'>${t("new-day-started")}</div><div class='new-day-desc'>${t("day-label")} ${newDay} • ${t("another-day-cursed")}</div></div>`;
-               ChatMessage.create({ content: msg });
-             }
-           }
+          rejectClose: false,
+          modal: true
+        });
+        
+        if (confirmed) {
+          const newDay = Number(current.day) + 1;
+          const newHour = 6;
+          const newMinute = 0;
+          const year = current.year;
+          
+          // Reset agent time tracking
+          await game.settings.set("from-time-management", "agentDayTimeTracking", {});
+          await game.settings.set("from-time-management", "agentNightTimeTracking", {});
+          
+          // Update game time
+          await game.settings.set("from-time-management", "gameTime", JSON.stringify({ day: newDay, hour: newHour, minute: newMinute, year }));
+          await game.settings.set("from-time-management", "trackingMode", "day");
+          
+          // Refresh display
+          this._refreshCurrentTimeDisplay(this.element, true);
+          
+          // Notifications
+          ui.notifications?.info(`${t("new-day-started")}`);
+          const msg = `<div class='new-day-chat'><div class='new-day-icon'>🌅</div><div class='new-day-title'>${t("new-day-started")}</div><div class='new-day-desc'>${t("day-label")} ${newDay} • ${t("another-day-cursed")}</div></div>`;
+          ChatMessage.create({ content: msg });
+        }
       });
     }
 
