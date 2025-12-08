@@ -72,9 +72,9 @@
     "reset-agent-time": "Resetuj Czas Agentów",
     "reset-confirm": "Czy na pewno chcesz zresetować czas spędzony przez wszystkich agentów?",
     "clear-completed": "Wyczyść Ukończone",
-    "clear-all": "Wyczyść Wszystko",
     "clear-action-queue": "Wyczyść Kolejkę Akcji",
-    "clear-all-confirm": "Czy na pewno chcesz usunąć wszystkie akcje z kolejki?",
+    "no-completed-actions": "Brak ukończonych akcji do wyczyszczenia.",
+    "completed-actions-cleared": "Wyczyszczono {count} ukończonych akcji i przeniesiono do archiwum.",
     "from-time": "Od",
     "to-time": "do",
     "day-action": "Dzień",
@@ -93,6 +93,9 @@
     "choose-action-template": "Wybierz szablon akcji:",
     "action-name-placeholder": "Nazwa akcji",
     "cost-in-hours-placeholder": "Koszt w godzinach",
-    "for": "dla"
+    "for": "dla",
+    "cancel": "Anuluj",
+    "select-action-or-enter-data": "Wybierz akcję lub wprowadź poprawne dane",
+    "completed": "ukończona"
   }
 }

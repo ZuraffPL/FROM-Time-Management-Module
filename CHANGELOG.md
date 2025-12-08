@@ -5,6 +5,56 @@ All notable changes to the FROM Time Management System will be documented in thi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.0] - 2025-12-08
+
+### 🎯 DIALOGV2 MIGRATION & SMART ARCHIVING
+
+This major release fully migrates all dialogs to Foundry VTT v13+ DialogV2 API, removes all deprecation warnings, and introduces intelligent completed actions archiving.
+
+### Changed
+- **DialogV2 Complete Migration**: All dialogs now use modern DialogV2 API
+  - Time Management Dialog: Native FormData handling replaced with direct DOM queries
+  - Agent Tracker Dialog: Complete jQuery removal, native DOM event handling
+  - Action Queue Dialog: Modern _onRender lifecycle with event delegation
+  - Action Selection Dialog: Full DialogV2 rewrite with proper callback handling
+  - Zero deprecation warnings on Foundry VTT v13+
+
+- **Smart Completed Actions Management**: "Clear All" button replaced with "Clear Completed"
+  - Only removes completed actions from queue (preserves active actions)
+  - Automatically archives completed actions to respective agents
+  - Shows count of archived actions with confirmation message
+  - Notifies when no completed actions exist
+  - Full socket synchronization for multiplayer
+
+- **Code Architecture Improvements**:
+  - Singleton pattern for all dialogs prevents multiple instances
+  - Event delegation for dynamic content handling
+  - Native addEventListener replaces jQuery event handlers
+  - Improved socket message routing with operation-based handling
+  - Better lifecycle management with getInstance() methods
+
+### Added
+- **New Translation Keys**:
+  - `no-completed-actions`: Notification when queue has no completed actions
+  - `completed-actions-cleared`: Confirmation message with action count
+  - Multilingual support (Polish/English) for all new features
+
+### Fixed
+- Removed unused ActionSelectionDialog import from main.mjs
+- Fixed real-time synchronization for action completion checkboxes
+- Improved dialog refresh mechanism using close+show pattern
+- Better handling of concurrent socket messages
+
+### Technical Details
+- **Breaking Change**: Requires Foundry VTT v13+ for DialogV2 support
+- **Backward Compatibility**: DialogV2 API ensures future-proofing
+- **Performance**: Native DOM operations faster than jQuery equivalents
+- **Maintainability**: Cleaner code structure with modern JavaScript patterns
+
+**Impact**: Major architectural improvement ensuring long-term compatibility with Foundry VTT updates!
+
+---
+
 ## [1.4.0] - 2025-10-23
 
 ### 🎯 RESIZABLE DIALOGS WITH DYNAMIC SCALING

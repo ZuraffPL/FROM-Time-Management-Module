@@ -72,9 +72,9 @@
     "reset-agent-time": "Reset Agent Time",
     "reset-confirm": "Are you sure you want to reset time spent by all agents?",
     "clear-completed": "Clear Completed",
-    "clear-all": "Clear All",
     "clear-action-queue": "Clear Action Queue",
-    "clear-all-confirm": "Are you sure you want to remove all actions from the queue?",
+    "no-completed-actions": "No completed actions to clear.",
+    "completed-actions-cleared": "Cleared {count} completed actions and moved to archive.",
     "from-time": "From",
     "to-time": "to",
     "day-action": "Day",
@@ -93,6 +93,9 @@
     "choose-action-template": "Choose action template:",
     "action-name-placeholder": "Action name",
     "cost-in-hours-placeholder": "Cost in hours",
-    "for": "for"
+    "for": "for",
+    "cancel": "Cancel",
+    "select-action-or-enter-data": "Please select an action or enter valid data",
+    "completed": "completed"
   }
 }

@@ -1,6 +1,67 @@
 # FROM Time Management System - Version History
 
-## Version 1.4.0 (2025-10-23) - CURRENT RELEASE
+## Version 2.0.0 (2025-12-08) - CURRENT RELEASE
+**🎯 DIALOGV2 MIGRATION & SMART ARCHIVING RELEASE**
+
+### Major Features
+- ✅ **Complete DialogV2 Migration**: All dialogs modernized for Foundry VTT v13+
+- ✅ **Smart Completed Actions Archiving**: "Clear Completed" replaces "Clear All"
+- ✅ **Zero Deprecation Warnings**: Future-proof architecture with modern APIs
+- ✅ **Native DOM Event Handling**: jQuery completely removed from all dialogs
+- ✅ **Singleton Pattern Implementation**: Prevents duplicate dialog instances
+
+### Technical Implementation
+- Migrated all Dialog instances to foundry.applications.api.DialogV2
+- Replaced Dialog.confirm with DialogV2.confirm for confirmations
+- Implemented _onRender lifecycle hooks instead of activateListeners
+- Native querySelector and addEventListener throughout codebase
+- Event delegation for dynamic content (action items, checkboxes, delete buttons)
+- Improved socket synchronization with operation-based routing
+
+### Dialog-Specific Changes
+**Time Management Dialog:**
+- Direct DOM queries replace FormData parsing
+- Modern DialogV2.confirm for "New Day" confirmation
+- Cleaner button callback implementation
+
+**Agent Tracker Dialog:**
+- Complete jQuery removal (no more .find(), .on(), etc.)
+- Native event listeners with proper delegation
+- Singleton pattern with getInstance() for socket handlers
+- close+show pattern for reliable content refresh
+
+**Action Queue Dialog:**
+- _onRender replaces activateListeners
+- Smart archiving: only completed actions removed and archived
+- Real-time checkbox synchronization to all players
+- Event delegation for all interactive elements
+
+**Action Selection Dialog:**
+- Full DialogV2 rewrite with proper structure
+- Native DOM handling for template selection
+- Improved callback parameter handling
+
+### New Features
+**Clear Completed Actions:**
+- GM-only button replaces "Clear All"
+- Filters and archives only completed actions
+- Preserves active/pending actions in queue
+- Shows notification: "Cleared {count} completed actions and moved to archive"
+- Full multilingual support (PL/EN)
+- Socket synchronization ensures all players see updates
+
+### User Experience Improvements
+- No more deprecation warnings in console
+- More predictable dialog behavior
+- Better multiplayer synchronization
+- Cleaner action queue management workflow
+- Professional notifications with action counts
+
+**Impact**: Major architectural upgrade ensuring compatibility with current and future Foundry VTT versions!
+
+---
+
+## Version 1.4.0 (2025-10-23)
 **🎯 RESIZABLE DIALOGS WITH DYNAMIC SCALING RELEASE**
 
 ### Major Features

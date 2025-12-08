@@ -2,9 +2,22 @@
 
 A comprehensive time management module for Delta Green RPG sessions in Foundry VTT, inspired by the mechanics of the FROM TV series.
 
-> **Latest Version: 1.3.0** - 🎨 **UI/UX ENHANCEMENTS & POPOUT SUPPORT**: Visual improvements, popout window support, and enhanced dialog management for better multitasking! [See release notes](CHANGELOG.md#130---2025-09-24) for complete details.
+> **Latest Version: 2.0.0** - 🔄 **DIALOGV2 MIGRATION & COMPLETED ACTIONS ARCHIVING**: Full Foundry VTT v13+ compatibility with modern DialogV2 API, smart completed actions archiving, and refined UI! [See release notes](CHANGELOG.md#200---2025-12-08) for complete details.
 
 ## 🚀 Version Highlights
+
+### v2.0.0 - DialogV2 Migration & Smart Archiving
+- ✅ **Complete DialogV2 Migration** - All dialogs modernized for Foundry VTT v13+
+- ✅ **Smart Completed Actions Archiving** - "Clear Completed" replaces "Clear All"
+- ✅ **Zero Deprecation Warnings** - Future-proof architecture with modern APIs
+- ✅ **Native DOM Event Handling** - jQuery completely removed from all dialogs
+- ✅ **Singleton Pattern Implementation** - Prevents duplicate dialog instances
+
+### v1.4.0 - Resizable Dialogs
+- ✅ **Resizable Dialog Windows** - All major dialogs support dynamic resizing
+- ✅ **Proportional Content Scaling** - UI elements scale intelligently with window size
+- ✅ **High-Resolution Display Support** - Optimized for 1440p, 4K, and ultrawide monitors
+- ✅ **Dynamic Font Sizing** - Text scales using clamp() for optimal readability
 
 ### v1.3.0 - UI/UX & Popout Support
 - ✅ **Popout Window Support** - All dialogs can be popped out into separate windows
@@ -94,7 +107,8 @@ A comprehensive time management module for Delta Green RPG sessions in Foundry V
 
 ## 🔧 Compatibility
 
-- **Foundry VTT**: v12.331 - v13.348 (verified)
+- **Foundry VTT**: v12.331 - v13.350+ (verified)
+- **Recommended**: v13+ for full DialogV2 support
 - **System**: Delta Green (primary), adaptable to other systems
 - **Dependencies**: None (standalone module)
 - **Multiplayer**: Full support for multiple GMs and players
@@ -157,8 +171,13 @@ If you're upgrading from v1.0.4 or earlier:
 #### Action Queue Management
 1. Click the clipboard icon (📋) to view the Action Queue
 2. Mark actions as completed using checkboxes
-3. Delete individual actions or clear completed/all actions
-4. Monitor agent workloads and time allocation
+3. **Clear Completed Actions**: Use "Clear Completed" button to archive and remove finished actions
+   - Only removes actions marked as completed
+   - Automatically archives them to respective agents
+   - Preserves active/pending actions in the queue
+   - Shows confirmation with count of archived actions
+4. Delete individual actions using the trash icon
+5. Monitor agent workloads and time allocation
 
 ### For Players
 
@@ -212,11 +231,20 @@ Additional language support welcome via pull requests.
 
 ## Technical Details
 
+### Architecture (v2.0.0)
+The module is built on modern Foundry VTT v13+ APIs:
+- **DialogV2 API**: All dialogs use `foundry.applications.api.DialogV2` for future-proof compatibility
+- **Native DOM**: Pure JavaScript DOM manipulation (no jQuery dependencies)
+- **Event Delegation**: Efficient event handling for dynamic content
+- **Singleton Pattern**: Prevents duplicate dialog instances and enables socket communication
+- **ES Modules**: Clean import/export structure for maintainability
+
 ### Socket Events
 The module uses `module.from-time-management` socket events for real-time synchronization:
-- `updateAgentTracking`: Synchronizes all tracking data across clients
-- `addActionToQueue`: Handles action requests from players to GM
-- `requestCurrentData`: Player requests for current data sync
+- `forceRefreshAgentTracker`: Synchronizes agent tracker across all clients
+- `forceRefreshActionQueue`: Updates action queue for all players
+- `addActionToQueue`: Handles action addition requests from players to GM
+- Operation-based routing for extensibility
 
 ### Data Storage
 The module uses a hybrid storage approach for maximum reliability:
@@ -244,6 +272,33 @@ All data also persists in Foundry's world settings as backup:
 - Minimal network traffic through targeted socket events
 
 ## Development
+
+### Project Structure
+```
+from-time-management/
+├── main.mjs                          # Module entry point and initialization
+├── module.json                       # Module manifest and metadata
+├── LICENSE                           # MIT license
+├── README.md                         # This file
+├── CHANGELOG.md                      # Detailed version history
+├── VERSION-HISTORY.md                # Version highlights and summaries
+├── .gitignore                        # Git ignore rules
+├── deploy-to-modules.ps1             # Deployment script for testing
+│
+├── scripts/                          # JavaScript modules
+│   ├── time-management-dialog.js    # GM time control dialog (DialogV2)
+│   ├── agent-tracker-dialog.js      # Agent activity tracking (DialogV2)
+│   ├── action-queue-dialog.js       # Action queue management (DialogV2)
+│   ├── action-selection-dialog.js   # Action selection interface (DialogV2)
+│   └── time-management.old.js       # Legacy code (deprecated)
+│
+├── styles/                           # CSS stylesheets
+│   └── time-management.css          # Main stylesheet with responsive design
+│
+└── lang/                            # Localization files
+    ├── en.json                      # English translations
+    └── pl.json                      # Polish translations
+```
 
 ### Building from Source
 ```bash
