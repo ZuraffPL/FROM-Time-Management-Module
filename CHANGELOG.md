@@ -5,6 +5,35 @@ All notable changes to the FROM Time Management System will be documented in thi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.1] - 2025-12-08
+
+### 🐛 BUG FIX: Time Overflow Distribution
+
+This patch release fixes a critical bug where actions spanning multiple periods (day→night or night→day) didn't properly distribute hours across both periods.
+
+### Fixed
+- **Proper Time Overflow Distribution**: Actions that exceed period limits now correctly split hours
+  - Day period fills to maximum (12h) before overflow transfers to night
+  - Night period fills to maximum (12h) before overflow transfers to day
+  - Progress bars now accurately reflect time spent in each period
+  - Fixes issue where all action hours were added to current period only
+
+### Example Scenario
+**Before v2.0.1:**
+- Agent has 11/12h used in day period
+- Adds 3h action
+- Result: Day shows 14/12h (incorrect overflow), Night shows 0/12h
+
+**After v2.0.1:**
+- Agent has 11/12h used in day period
+- Adds 3h action
+- Result: Day shows 12/12h (filled to max), Night shows 2/12h (overflow)
+
+### Impact
+Essential fix for accurate time tracking in campaigns using day/night mechanics. Ensures progress bars display correctly when actions span multiple periods.
+
+---
+
 ## [2.0.0] - 2025-12-08
 
 ### 🎯 DIALOGV2 MIGRATION & SMART ARCHIVING

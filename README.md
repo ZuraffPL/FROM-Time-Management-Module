@@ -2,7 +2,7 @@
 
 A comprehensive time management module for Delta Green RPG sessions in Foundry VTT, inspired by the mechanics of the FROM TV series.
 
-> **Latest Version: 2.0.0** - 🔄 **DIALOGV2 MIGRATION & COMPLETED ACTIONS ARCHIVING**: Full Foundry VTT v13+ compatibility with modern DialogV2 API, smart completed actions archiving, and refined UI! [See release notes](CHANGELOG.md#200---2025-12-08) for complete details.
+> **Latest Version: 2.0.1** - 🔧 **BUG FIX**: Fixed time overflow distribution between day/night periods for accurate progress tracking! [See release notes](CHANGELOG.md#201---2025-12-08) for complete details.
 
 ## 🚀 Version Highlights
 

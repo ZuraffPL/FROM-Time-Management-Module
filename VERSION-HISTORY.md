@@ -1,6 +1,48 @@
 # FROM Time Management System - Version History
 
-## Version 2.0.0 (2025-12-08) - CURRENT RELEASE
+## Version 2.0.1 (2025-12-08) - CURRENT RELEASE
+**🐛 BUG FIX: TIME OVERFLOW DISTRIBUTION**
+
+### Critical Fix
+- ✅ **Proper Time Overflow Distribution**: Actions spanning multiple periods now correctly split hours
+- ✅ **Accurate Progress Bars**: Day and night progress bars display correctly for overflow actions
+- ✅ **Period Limit Enforcement**: Each period fills to maximum (12h) before overflow transfers
+
+### The Problem (v2.0.0)
+When an action exceeded a period's remaining time:
+- All action hours added to current period only
+- Progress bars showed incorrect values (>12h)
+- Overflow to next period wasn't calculated
+
+### The Solution (v2.0.1)
+Smart overflow distribution:
+- Current period fills to maximum (12h)
+- Remaining hours transfer to opposite period
+- Both progress bars update correctly
+- Accurate time tracking across day/night cycles
+
+### Example Fix
+**Scenario**: Agent has 11/12h in day, adds 3h action
+
+**Before (v2.0.0):**
+- Day: 14/12h ❌ (incorrect)
+- Night: 0/12h
+
+**After (v2.0.1):**
+- Day: 12/12h ✅ (filled to max)
+- Night: 2/12h ✅ (overflow)
+
+### User Impact
+- Essential for campaigns using day/night mechanics
+- Ensures accurate time tracking
+- Fixes progress bar visualization
+- No data migration needed - fix applies to new actions
+
+**Recommendation**: Update immediately if using day/night tracking features.
+
+---
+
+## Version 2.0.0 (2025-12-08)
 **🎯 DIALOGV2 MIGRATION & SMART ARCHIVING RELEASE**
 
 ### Major Features
