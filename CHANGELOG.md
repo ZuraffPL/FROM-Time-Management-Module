@@ -5,14 +5,32 @@ All notable changes to the FROM Time Management System will be documented in thi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [2.0.4] - 2025-12-08
+
+### 🔧 BUG FIX: TIME SYNCHRONIZATION
+
+This patch release fixes the Agent Tracker time display to properly sync with Time Management Dialog changes.
 
 ### Fixed
 - **Agent Tracker Time Display**: Current time section now properly displays and updates from Time Management Dialog
-  - Synchronized `gameTime` with `currentGameTime` for compatibility
-  - Added socket event broadcasting when GM changes time
+  - Synchronized `gameTime` with `currentGameTime` for compatibility between different system components
+  - Added socket event broadcasting when GM changes time in Time Management Dialog
   - Agent Tracker Dialog automatically refreshes when time changes
   - Real-time updates across all connected clients
+  - Fixes issue where current time section showed outdated time after GM made changes
+
+### Technical Details
+- New `updateGameTime()` function ensures both time formats stay synchronized
+- Socket event `timeChanged` broadcasts to all clients when GM modifies time
+- Socket listener in `main.mjs` handles automatic UI refresh
+- Works with manual time changes, "Set Time" button, and "New Day" button
+
+### Impact
+- Players now see accurate current time in Agent Tracker without manual refresh
+- Better multiplayer experience with instant synchronization
+- Eliminates confusion from outdated time displays
+
+---
 
 ## [2.0.3] - 2025-12-08
 

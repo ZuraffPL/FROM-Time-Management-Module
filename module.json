@@ -2,7 +2,7 @@
   "id": "from-time-management",
   "title": "FROM Time Management System",
   "description": "Comprehensive time management system for Delta Green RPG sessions. Features agent activity tracking with visual themes, day/night cycles, action queues with complete historical archive, and real-time multiplayer synchronization. Inspired by FROM TV series mechanics.",
-  "version": "2.0.3",
+  "version": "2.0.4",
   "compatibility": {
     "minimum": "12.331",
     "verified": "13.350",
@@ -36,7 +36,7 @@
   
   "url": "https://github.com/ZuraffPL/FROM-Time-Management-Module",
   "manifest": "https://github.com/ZuraffPL/FROM-Time-Management-Module/releases/latest/download/module.json",
-  "download": "https://github.com/ZuraffPL/FROM-Time-Management-Module/releases/download/v2.0.3/from-time-management-v2.0.3.zip",
+  "download": "https://github.com/ZuraffPL/FROM-Time-Management-Module/releases/download/v2.0.4/from-time-management-v2.0.4.zip",
   "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
   "readme": "README.md",
   "changelog": "CHANGELOG.md"

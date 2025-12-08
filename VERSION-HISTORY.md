@@ -1,6 +1,39 @@
 # FROM Time Management System - Version History
 
-## Version 2.0.3 (2025-12-08) - CURRENT RELEASE
+## Version 2.0.4 (2025-12-08) - CURRENT RELEASE
+**🔧 BUG FIX: TIME SYNCHRONIZATION**
+
+### Critical Fix
+- ✅ **Agent Tracker Time Display**: Current time now syncs with Time Management Dialog
+- ✅ **Real-time Updates**: Socket event broadcasting for instant synchronization
+- ✅ **Auto-refresh**: Agent Tracker automatically updates when GM changes time
+- ✅ **Multiplayer Sync**: All connected clients see accurate time instantly
+
+### The Problem (v2.0.3)
+- Agent Tracker showed "Aktualny Czas" from old `currentGameTime` setting
+- Time Management Dialog used different `gameTime` setting
+- Changes in Time Management Dialog didn't update Agent Tracker
+- Players saw outdated time until manual refresh
+
+### The Solution (v2.0.4)
+- Unified time synchronization: `updateGameTime()` writes both formats
+- Socket event `timeChanged` broadcasts to all clients
+- Automatic UI refresh when time changes detected
+- Works with all time change methods (input, Set Time button, New Day)
+
+### Technical Details
+- New `TimeManagementDialog.updateGameTime()` method
+- Socket listener in `main.mjs` for `timeChanged` event
+- Backward compatibility maintained with both time formats
+
+### Impact
+- ✅ No more outdated time displays
+- ✅ Better player experience with instant updates
+- ✅ Eliminates confusion in multiplayer sessions
+
+---
+
+## Version 2.0.3 (2025-12-08)
 **📄 LICENSE CHANGE, BUG FIXES & ENHANCEMENTS**
 
 ### Critical Fixes

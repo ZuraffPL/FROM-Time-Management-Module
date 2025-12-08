@@ -2,7 +2,7 @@
 
 A comprehensive time management module for Delta Green RPG sessions in Foundry VTT, inspired by the mechanics of the FROM TV series.
 
-> **Latest Version: 2.0.3** - 📄 **LICENSE CHANGE**: Updated from MIT to CC BY-NC-SA 4.0 for better community protection. [See release notes](CHANGELOG.md#203---2025-12-08) for complete details.
+> **Latest Version: 2.0.4** - 🔧 **BUG FIX**: Fixed Agent Tracker time display synchronization with Time Management Dialog for real-time updates! [See release notes](CHANGELOG.md#204---2025-12-08) for complete details.
 
 ## 🚀 Version Highlights
 
