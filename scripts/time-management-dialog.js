@@ -210,9 +210,34 @@ export class TimeManagementDialog extends foundry.applications.api.DialogV2 {
           this._refreshCurrentTimeDisplay(this.element, true);
           
           // Notifications
-          ui.notifications?.info(`${t("new-day-started")}`);
-          const msg = `<div class='new-day-chat'><div class='new-day-icon'>🌅</div><div class='new-day-title'>${t("new-day-started")}</div><div class='new-day-desc'>${t("day-label")} ${newDay} • ${t("another-day-cursed")}</div></div>`;
-          ChatMessage.create({ content: msg });
+          ui.notifications?.info(`${t("new-day-started")} (${t("day-label")} ${newDay})`);
+          
+          // Broadcast to chat with styled message
+          const message = `
+            <div style="
+              background: linear-gradient(135deg, #FFF3E0 0%, #FFE0B2 100%);
+              border: 2px solid #FF6F00;
+              border-radius: 8px;
+              padding: 15px;
+              text-align: center;
+              box-shadow: 0 2px 8px rgba(255, 152, 0, 0.3);
+            ">
+              <div style="font-size: 24px; margin-bottom: 8px;">🌅</div>
+              <div style="font-size: 18px; font-weight: bold; color: #E65100; margin-bottom: 5px;">
+                ${t("new-day-started")}
+              </div>
+              <div style="font-size: 14px; color: #BF360C;">
+                ${t("day-label")} ${newDay} • ${t("another-day-cursed")}
+              </div>
+            </div>
+          `;
+          
+          ChatMessage.create({
+            content: message,
+            style: CONST.CHAT_MESSAGE_STYLES.OTHER
+          });
+          
+          console.log(`FROM TimeManagement: New day in town started (Day ${newDay})`);
         }
       });
     }
