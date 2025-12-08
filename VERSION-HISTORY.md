@@ -1,6 +1,48 @@
 # FROM Time Management System - Version History
 
-## Version 2.0.1 (2025-12-08) - CURRENT RELEASE
+## Version 2.0.3 (2025-12-08) - CURRENT RELEASE
+**📄 LICENSE CHANGE, BUG FIXES & ENHANCEMENTS**
+
+### Critical Fixes
+- ✅ **New Day Button Fixed**: Corrected DialogV2.confirm syntax, proper async/await handling
+- ✅ **Agent Progress Reset**: Progress bars now reset correctly on new day
+- ✅ **Confirmation Flow**: Single clean code path - no more duplicate logic
+- ✅ **Sequential Execution**: Click → Confirm → Day increments, time resets, tracking resets
+
+### Visual Enhancements
+- ✅ **Styled Chat Messages**: Restored atmospheric New Day announcements
+- ✅ **Orange Gradient Background**: Enhanced visibility with border and proper styling
+- ✅ **Large Emoji Icon**: 🌅 emoji (24px) for visual impact
+- ✅ **Formatted Text**: Proper colors, hierarchy, and atmospheric messaging
+- ✅ **Inline CSS**: Ensures consistent display across all clients
+
+### License Update
+- ✅ **New License**: Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International
+- ✅ **Attribution Required**: Users must credit original author
+- ✅ **NonCommercial**: No commercial use without explicit permission
+- ✅ **ShareAlike**: Derivative works must use same CC BY-NC-SA 4.0 license
+- ✅ **License URL**: https://creativecommons.org/licenses/by-nc-sa/4.0/
+
+### Repository Cleanup
+- ✅ **Removed Release Artifacts**: Version-specific files no longer tracked in Git
+- ✅ **Updated .gitignore**: Excludes *.zip, checksums, scripts, release notes
+- ✅ **Cleaner Repository**: Focus on source code and primary documentation
+
+### What This Means
+- **For Users**: New Day works reliably + enhanced visual experience + free to use with attribution
+- **For Developers**: Can build upon this work if sharing under same license
+- **Commercial Use**: Requires permission from author
+
+### Files Updated
+- `scripts/time-management-dialog.js` - Fixed New Day button + enhanced chat styling
+- `LICENSE` - Complete CC BY-NC-SA 4.0 license text
+- `module.json` - License field updated to CC URL
+- `README.md` - License section reflects new terms
+- `.gitignore` - Excludes release artifacts
+
+---
+
+## Version 2.0.1 (2025-12-08)
 **🐛 BUG FIX: TIME OVERFLOW DISTRIBUTION**
 
 ### Critical Fix

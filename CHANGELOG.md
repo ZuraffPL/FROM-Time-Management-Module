@@ -5,6 +5,54 @@ All notable changes to the FROM Time Management System will be documented in thi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.3] - 2025-12-08
+
+### 📄 LICENSE CHANGE & BUG FIXES
+
+This release updates the project license to CC BY-NC-SA 4.0, fixes the New Day button functionality, and enhances chat message styling for better player experience.
+
+### Fixed
+- **New Day Button Functionality**: Fixed critical issue where New Day button didn't execute action
+  - Corrected DialogV2.confirm syntax (removed incorrect yes/no callbacks)
+  - Implemented proper async/await pattern with boolean return value
+  - Single, clean code path for handling user confirmation
+  - Agent progress bars now reset correctly on new day
+  - All notifications and chat messages work as expected
+  - Sequential execution: Click → Confirm → Day increments, time resets to 6:00, agent tracking resets
+
+### Improved
+- **New Day Chat Message Styling**: Restored atmospheric styled chat messages
+  - Orange gradient background with border for visibility
+  - Large 🌅 emoji icon (24px) for visual impact
+  - Formatted text with proper colors and hierarchy
+  - Shows day number and atmospheric message: "New day has dawned • Day X • Another in this cursed place"
+  - Uses inline CSS to ensure consistent display across all clients
+  - More immersive and visible for players
+
+### Changed
+- **License Update**: Changed from MIT License to CC BY-NC-SA 4.0
+  - Attribution required: Users must credit the original author
+  - NonCommercial: No commercial use without permission
+  - ShareAlike: Derivative works must use the same license
+  - Full license text: https://creativecommons.org/licenses/by-nc-sa/4.0/
+- Updated `LICENSE` file with complete CC BY-NC-SA 4.0 text
+- Updated `module.json` license field to CC BY-NC-SA 4.0 URL
+- Updated `README.md` license section with new license information
+
+### Chore
+- **Repository Cleanup**: Removed auto-generated release artifacts from Git tracking
+  - Removed version-specific files (RELEASE_NOTES, GITHUB-RELEASE-INSTRUCTIONS, etc.)
+  - Updated `.gitignore` to exclude future release artifacts (*.zip, checksums, scripts)
+  - Keeps repository clean and focused on source code
+
+### Impact
+- **For Users**: New Day button now works reliably, enhanced visual experience
+- **License**: Continue using under new CC BY-NC-SA 4.0 terms
+- **Commercial Use**: Requires explicit permission from author
+- **Derivative Works**: Must be shared under same CC BY-NC-SA 4.0 license
+
+---
+
 ## [2.0.1] - 2025-12-08
 
 ### 🐛 BUG FIX: Time Overflow Distribution
