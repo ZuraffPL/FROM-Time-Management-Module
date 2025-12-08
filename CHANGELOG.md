@@ -5,6 +5,15 @@ All notable changes to the FROM Time Management System will be documented in thi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Fixed
+- **Agent Tracker Time Display**: Current time section now properly displays and updates from Time Management Dialog
+  - Synchronized `gameTime` with `currentGameTime` for compatibility
+  - Added socket event broadcasting when GM changes time
+  - Agent Tracker Dialog automatically refreshes when time changes
+  - Real-time updates across all connected clients
+
 ## [2.0.3] - 2025-12-08
 
 ### 📄 LICENSE CHANGE & BUG FIXES

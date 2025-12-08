@@ -101,3 +101,32 @@ Hooks.once("init", () => {
     default: {}
   });
 });
+
+// Socket listener dla odbieżania zdarzeń z serwera
+Hooks.once("ready", () => {
+  if (game.socket) {
+    game.socket.on("module.from-time-management", (data) => {
+      console.log("[FROM-TM] Socket event received:", data);
+      
+      // Odśwież tracker dialog gdy zmieni się czas
+      if (data.type === "timeChanged") {
+        // Znajdź otwarte okna AgentTrackerDialog i odśwież je
+        for (const win of Object.values(ui.windows)) {
+          if (win.constructor.name === "AgentTrackerDialog") {
+            console.log("[FROM-TM] Refreshing AgentTrackerDialog due to time change");
+            win.render(true);
+          }
+        }
+      }
+      
+      // Obsługa innych eventów (forceRefreshAgentTracker, etc)
+      if (data.operation === "forceRefreshAgentTracker") {
+        for (const win of Object.values(ui.windows)) {
+          if (win.constructor.name === "AgentTrackerDialog") {
+            win.render(true);
+          }
+        }
+      }
+    });
+  }
+});

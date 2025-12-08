@@ -33,6 +33,25 @@ export class TimeManagementDialog extends foundry.applications.api.DialogV2 {
     return { day: 1, hour: 8, minute: 0, year: 2025 };
   }
 
+  static async updateGameTime({ day, hour, minute, year }) {
+    // Zapisz w obu formatach dla kompatybilności
+    await game.settings.set("from-time-management", "gameTime", JSON.stringify({ day, hour, minute, year }));
+    await game.settings.set("from-time-management", "currentGameTime", { 
+      hours: hour, 
+      minutes: minute, 
+      day: day, 
+      year: year 
+    });
+    
+    // Wysyłamy socket event do wszystkich klientów o zmianie czasu
+    if (game.socket && game.user.isGM) {
+      game.socket.emit("module.from-time-management", {
+        type: "timeChanged",
+        time: { day, hour, minute, year }
+      });
+    }
+  }
+
   static t(key) {
     const dict = game.i18n.translations["from-time-management"] || {};
     return dict[key] || game.i18n.localize(`from-time-management.${key}`) || key;
@@ -120,7 +139,7 @@ export class TimeManagementDialog extends foundry.applications.api.DialogV2 {
       const hour = Number(hourInput.value);
       const minute = Number(minuteInput.value);
       const year = Number(yearInput.value);
-      await game.settings.set("from-time-management", "gameTime", JSON.stringify({ day, hour, minute, year }));
+      await TimeManagementDialog.updateGameTime({ day, hour, minute, year });
       // Automatyczna zmiana trybu dzień/noc
       const mode = (hour >= 6 && hour < 18) ? "day" : "night";
       await game.settings.set("from-time-management", "trackingMode", mode);
@@ -203,7 +222,7 @@ export class TimeManagementDialog extends foundry.applications.api.DialogV2 {
           await game.settings.set("from-time-management", "agentNightTimeTracking", {});
           
           // Update game time
-          await game.settings.set("from-time-management", "gameTime", JSON.stringify({ day: newDay, hour: newHour, minute: newMinute, year }));
+          await TimeManagementDialog.updateGameTime({ day: newDay, hour: newHour, minute: newMinute, year });
           await game.settings.set("from-time-management", "trackingMode", "day");
           
           // Refresh display
