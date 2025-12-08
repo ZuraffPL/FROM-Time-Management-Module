@@ -4,41 +4,51 @@ import { ActionQueueDialog } from "./scripts/action-queue-dialog.js";
 
 console.log("[FROM-TM] main.mjs start");
 
-// Rejestracja własnej grupy narzędzi w stylu Simple Fog
+// Rejestracja własnej grupy narzędzi
 Hooks.on("getSceneControlButtons", controls => {
   console.log("[FROM-TM] getSceneControlButtons hook fired");
-  // Show the group to all users
-  controls.fromtimemanagement = {
-    name: "fromtimemanagement",
-    title: "FROM: Time Management",
+  console.log("[FROM-TM] controls type:", typeof controls, "isArray:", Array.isArray(controls));
+  
+  // Foundry v13+ uses object structure, not array
+  // Add tools to existing controls object
+  if (!controls.fromtimemanagement) {
+    controls.fromtimemanagement = {
+      name: "fromtimemanagement",
+      title: "FROM: Time Management",
+      icon: "fas fa-clock",
+      layer: "fromtimemanagement",
+      tools: {}
+    };
+  }
+  
+  // Add individual tools
+  controls.fromtimemanagement.tools.timemanagement = {
+    name: "timemanagement",
+    title: "Zarządzanie Czasem",
     icon: "fas fa-clock",
-    tools: {
-      timemanagement: {
-        name: "timemanagement",
-        title: "Zarządzanie Czasem",
-        icon: "fas fa-clock",
-        visible: !!game.user.isGM, // Only visible to GM
-        onChange: () => { if (game.user.isGM) TimeManagementDialog.show(); },
-        button: true
-      },
-      agenttracker: {
-        name: "agenttracker",
-        title: "Śledzenie Agentów",
-        icon: "fas fa-users-cog",
-        visible: true,
-        onChange: () => AgentTrackerDialog.show(),
-        button: true
-      },
-      actionqueue: {
-        name: "actionqueue",
-        title: "Kolejka Akcji",
-        icon: "fas fa-clipboard-list",
-        visible: true,
-        onChange: () => ActionQueueDialog.show(),
-        button: true
-      }
-    }
+    visible: game.user.isGM,
+    onChange: () => TimeManagementDialog.show(),
+    button: true
   };
+  
+  controls.fromtimemanagement.tools.agenttracker = {
+    name: "agenttracker",
+    title: "Śledzenie Agentów",
+    icon: "fas fa-users-cog",
+    visible: true,
+    onChange: () => AgentTrackerDialog.show(),
+    button: true
+  };
+  
+  controls.fromtimemanagement.tools.actionqueue = {
+    name: "actionqueue",
+    title: "Kolejka Akcji",
+    icon: "fas fa-clipboard-list",
+    visible: true,
+    onChange: () => ActionQueueDialog.show(),
+    button: true
+  };
+  
   console.log("[FROM-TM] Custom controls group 'fromtimemanagement' added");
 });
 
