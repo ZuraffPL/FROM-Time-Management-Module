@@ -323,7 +323,7 @@ Please use the [GitHub issue tracker](https://github.com/your-username/from-time
 
 ## License
 
-This module is licensed under the MIT License. See `LICENSE` file for details.
+This module is licensed under the Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License (CC BY-NC-SA 4.0). See `LICENSE` file for details or visit https://creativecommons.org/licenses/by-nc-sa/4.0/
 
 ## Credits
 
