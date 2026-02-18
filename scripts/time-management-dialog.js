@@ -256,7 +256,6 @@ export class TimeManagementDialog extends foundry.applications.api.DialogV2 {
             style: CONST.CHAT_MESSAGE_STYLES.OTHER
           });
           
-          console.log(`FROM TimeManagement: New day in town started (Day ${newDay})`);
         }
       });
     }

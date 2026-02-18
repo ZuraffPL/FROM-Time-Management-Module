@@ -85,11 +85,10 @@ export async function addActionToQueue(agentId, agentName, actionName, actionCos
     
     ui.notifications.info(`Dodano akcję "${actionName}" (${actionCost}h) dla ${agent.name}`);
     
-    // Odśwież lokalnie u GM przez close+show
+    // Odśwież lokalnie u GM przez refreshContent (bez migotania)
     const trackerInstance = AgentTrackerDialog.getInstance();
     if (trackerInstance) {
-      trackerInstance.close();
-      setTimeout(() => AgentTrackerDialog.show(), 100);
+      trackerInstance.refreshContent();
     }
     
     const queueInstance = ActionQueueDialog.getInstance();
@@ -249,26 +248,16 @@ export class ActionArchiveDialog extends foundry.applications.api.DialogV2 {
     const dayModeBtn = root.querySelector('#day-mode-btn');
     if (dayModeBtn && game.user.isGM) {
       dayModeBtn.addEventListener('click', async () => {
-        console.log("[FROM-TM] Day mode button clicked");
         await game.settings.set("from-time-management", "trackingMode", "day");
-        console.log("[FROM-TM] Rendering local dialogs");
-        for (const win of Object.values(ui.windows)) {
-          if (win instanceof AgentTrackerDialog) win.render(true);
-        }
-        console.log("[FROM-TM] Emitting socket message");
+        AgentTrackerDialog.refreshAll();
         game.socket.emit("module.from-time-management", { operation: "forceRefreshAgentTracker" });
       });
     }
     const nightModeBtn = root.querySelector('#night-mode-btn');
     if (nightModeBtn && game.user.isGM) {
       nightModeBtn.addEventListener('click', async () => {
-        console.log("[FROM-TM] Night mode button clicked");
         await game.settings.set("from-time-management", "trackingMode", "night");
-        console.log("[FROM-TM] Rendering local dialogs");
-        for (const win of Object.values(ui.windows)) {
-          if (win instanceof AgentTrackerDialog) win.render(true);
-        }
-        console.log("[FROM-TM] Emitting socket message");
+        AgentTrackerDialog.refreshAll();
         game.socket.emit("module.from-time-management", { operation: "forceRefreshAgentTracker" });
       });
     }
@@ -298,7 +287,6 @@ export class ActionArchiveDialog extends foundry.applications.api.DialogV2 {
         ActionSelectionDialog.show(agentId, agentName, async (agentId, agentName, actionName, actionCost) => {
           await addActionToQueue(agentId, agentName, actionName, actionCost);
         });
-        this.render(true);
       });
     });
 
@@ -312,7 +300,6 @@ export class ActionArchiveDialog extends foundry.applications.api.DialogV2 {
           return;
         }
         ActionArchiveDialog.show(agentId, agentName);
-        this.render(true);
       });
     });
 
@@ -324,7 +311,6 @@ export class ActionArchiveDialog extends foundry.applications.api.DialogV2 {
         if (window.TimeManagement && typeof window.TimeManagement.showResetDayDialog === "function") {
           window.TimeManagement.showResetDayDialog(agentId, agentName);
         }
-        this.render(true);
       });
     });
 
@@ -343,9 +329,7 @@ export class ActionArchiveDialog extends foundry.applications.api.DialogV2 {
         else nightTimes[agentId] = value;
         await game.settings.set("from-time-management", "agentDayTimeTracking", dayTimes);
         await game.settings.set("from-time-management", "agentNightTimeTracking", nightTimes);
-        for (const win of Object.values(ui.windows)) {
-          if (win instanceof AgentTrackerDialog) win.render(true);
-        }
+        AgentTrackerDialog.refreshAll();
         game.socket.emit("module.from-time-management", { operation: "forceRefreshAgentTracker" });
         ui.notifications.info(game.i18n.localize("from-time-management.time-adjusted") || "Time adjusted");
       });
@@ -367,6 +351,80 @@ export class AgentTrackerDialog extends foundry.applications.api.DialogV2 {
 
   static getInstance() {
     return AgentTrackerDialog._instance;
+  }
+
+  /**
+   * Odświeża tylko zawartość okna bez zamykania/otwierania.
+   * Zachowuje pozycję, rozmiar, stan okna i otwarty inline panel wyboru akcji.
+   */
+  refreshContent() {
+    const contentEl = this.element?.querySelector('.window-content');
+    if (!contentEl) {
+      this.render(true);
+      return;
+    }
+
+    // Zapisz stan otwartego inline panelu (lokalny dla tego gracza)
+    const openPanel = contentEl.querySelector('.inline-action-panel[style*="display: block"], .inline-action-panel[style*="display:block"]');
+    let openPanelAgentId = null;
+    let openPanelAgentName = null;
+    let openPanelCustomName = '';
+    let openPanelCustomCost = '';
+    if (openPanel && openPanel.style.display === 'block') {
+      openPanelAgentId = openPanel.dataset.agentId;
+      openPanelAgentName = openPanel.dataset.agentName;
+      // Zachowaj wartości custom inputów
+      const nameInput = openPanel.querySelector('.inline-custom-name');
+      const costInput = openPanel.querySelector('.inline-custom-cost');
+      if (nameInput) openPanelCustomName = nameInput.value;
+      if (costInput) openPanelCustomCost = costInput.value;
+    }
+
+    const newHTML = AgentTrackerDialog.generateAgentTrackerContent();
+    // Zapisz scroll przed nadpisaniem
+    const agentList = contentEl.querySelector('.agent-list');
+    const scrollTop = agentList ? agentList.scrollTop : 0;
+    // Nadpisz tylko zawartość .agent-tracker-window wewnątrz window-content
+    const innerContent = contentEl.querySelector('.agent-tracker-window');
+    if (innerContent) {
+      const temp = document.createElement('div');
+      temp.innerHTML = newHTML;
+      const newNode = temp.firstElementChild;
+      if (newNode) innerContent.replaceWith(newNode);
+    } else {
+      contentEl.innerHTML = newHTML;
+    }
+    // Przywróć scroll
+    const newAgentList = contentEl.querySelector('.agent-list');
+    if (newAgentList) newAgentList.scrollTop = scrollTop;
+
+    // Przywróć otwarty inline panel (jeśli był)
+    if (openPanelAgentId) {
+      const restoredPanel = contentEl.querySelector(`.inline-action-panel[data-agent-id="${openPanelAgentId}"]`);
+      if (restoredPanel) {
+        restoredPanel.innerHTML = AgentTrackerDialog.generateInlineActionPanel(openPanelAgentId, openPanelAgentName);
+        restoredPanel.style.display = 'block';
+        // Przywróć wartości custom inputów
+        if (openPanelCustomName) {
+          const nameInput = restoredPanel.querySelector('.inline-custom-name');
+          if (nameInput) nameInput.value = openPanelCustomName;
+        }
+        if (openPanelCustomCost) {
+          const costInput = restoredPanel.querySelector('.inline-custom-cost');
+          if (costInput) costInput.value = openPanelCustomCost;
+        }
+      }
+    }
+  }
+
+  /**
+   * Statyczna metoda odświeżająca wszystkie otwarte instancje u bieżącego gracza.
+   */
+  static refreshAll() {
+    const instance = AgentTrackerDialog._instance;
+    if (instance) {
+      instance.refreshContent();
+    }
   }
 
   constructor() {
@@ -412,8 +470,8 @@ export class AgentTrackerDialog extends foundry.applications.api.DialogV2 {
         icon: '<i class="fas fa-sync-alt"></i>',
         label: game.i18n.localize("from-time-management.refresh") || "Refresh",
         callback: () => {
-          const dlg = Object.values(ui.windows).find(w => w instanceof AgentTrackerDialog);
-          if (dlg) dlg.render(true);
+          const dlg = AgentTrackerDialog.getInstance();
+          if (dlg) dlg.refreshContent();
         }
       },
       close: {
@@ -440,8 +498,7 @@ export class AgentTrackerDialog extends foundry.applications.api.DialogV2 {
             ui.notifications.info("Agent time tracking has been reset.");
             const instance = AgentTrackerDialog.getInstance();
             if (instance) {
-              instance.close();
-              setTimeout(() => AgentTrackerDialog.show(), 100);
+              instance.refreshContent();
             }
           }
         }
@@ -489,7 +546,13 @@ export class AgentTrackerDialog extends foundry.applications.api.DialogV2 {
   static generateAgentTrackerContent() {
     const trackingMode = game.settings.get("from-time-management", "trackingMode") || "day";
     const currentTime = game.settings.get("from-time-management", "currentGameTime") || { hours: 12, minutes: 0, day: 1, year: new Date().getFullYear() };
-    const activeAgents = AgentTrackerDialog.getActiveAgents();
+    let activeAgents = AgentTrackerDialog.getActiveAgents();
+    const hiddenAgents = game.settings.get("from-time-management", "hiddenAgents") || [];
+    const isGM = game.user.isGM;
+    // Gracze nie widzą ukrytych agentów, GM widzi wszystkich
+    if (!isGM) {
+      activeAgents = activeAgents.filter(a => !hiddenAgents.includes(a.agent.id));
+    }
     const currentHour = currentTime.hours;
     const isCurrentlyDay = currentHour >= 6 && currentHour < 18;
     let agentsHTML = '';
@@ -505,7 +568,6 @@ export class AgentTrackerDialog extends foundry.applications.api.DialogV2 {
     }
     const timeString = String(currentTime.hours).padStart(2, '0') + ':' + String(currentTime.minutes).padStart(2, '0') + `, ${currentTime.day}`;
     // Przyciski trybu dnia/nocy: tylko GM może klikać, gracz widzi disabled
-    const isGM = game.user.isGM;
     return `
       <div class="agent-tracker-window ${trackingMode === 'night' ? 'night-mode' : ''}">
         <div class="agent-tracker-header">
@@ -546,6 +608,8 @@ export class AgentTrackerDialog extends foundry.applications.api.DialogV2 {
     const avatar = agent.img || 'icons/svg/mystery-man.svg';
     const agentName = agent.name || game.i18n.localize("from-time-management.unknown-agent") || 'Unknown Agent';
     const playerName = user.name;
+    const hiddenAgents = game.settings.get("from-time-management", "hiddenAgents") || [];
+    const isHidden = hiddenAgents.includes(agent.id);
     const agentDayTimeTracking = game.settings.get("from-time-management", "agentDayTimeTracking") || {};
     const agentNightTimeTracking = game.settings.get("from-time-management", "agentNightTimeTracking") || {};
     const timeSpent = trackingMode === 'day' ? (agentDayTimeTracking[agent.id] || 0) : (agentNightTimeTracking[agent.id] || 0);
@@ -597,8 +661,11 @@ export class AgentTrackerDialog extends foundry.applications.api.DialogV2 {
       `;
     }
     return `
-      <div class="agent-entry" data-agent-id="${agent.id}">
+      <div class="agent-entry${isHidden ? ' agent-hidden' : ''}" data-agent-id="${agent.id}">
         <div class="agent-header-row">
+          ${game.user.isGM ? `<button type="button" class="agent-visibility-btn" data-agent-id="${agent.id}" title="${isHidden ? (game.i18n.localize('from-time-management.show-agent') || 'Show agent') : (game.i18n.localize('from-time-management.hide-agent') || 'Hide agent')}">
+            <i class="fas ${isHidden ? 'fa-eye-slash' : 'fa-eye'}"></i>
+          </button>` : ''}
           <img src="${avatar}" alt="${agentName}" class="agent-avatar" />
           <div class="agent-info">
             <div class="agent-name">${agentName}</div>
@@ -619,6 +686,7 @@ export class AgentTrackerDialog extends foundry.applications.api.DialogV2 {
             ${buttonsHTML}
           </div>
         </div>
+        <div class="inline-action-panel" data-agent-id="${agent.id}" data-agent-name="${agentName}" style="display:none;"></div>
       </div>
     `;
   }
@@ -630,6 +698,52 @@ export class AgentTrackerDialog extends foundry.applications.api.DialogV2 {
     return agent.ownership?.[game.user.id] >= CONST.DOCUMENT_OWNERSHIP_LEVELS.OWNER;
   }
 
+  /**
+   * Generuje HTML inline panelu wyboru akcji dla agenta.
+   */
+  static generateInlineActionPanel(agentId, agentName) {
+    const t = (key) => game.i18n.localize(`from-time-management.${key}`) || key;
+    const actionTemplates = [
+      { name: t("short-rest"), cost: 1 },
+      { name: t("npc-conversation"), cost: 1 },
+      { name: t("explore-near-town"), cost: 3 },
+      { name: t("investigate-location"), cost: 1 },
+      { name: t("meal-at-diner"), cost: 1 },
+      { name: t("medical-care-light"), cost: 2 },
+      { name: t("travel-town-colony"), cost: 1 },
+      { name: t("forest-exploration"), cost: 6 }
+    ];
+    const templatesHTML = actionTemplates.map(tpl => `
+      <div class="inline-action-template" data-name="${tpl.name}" data-cost="${tpl.cost}">
+        <span class="inline-template-name">${tpl.name}</span>
+        <span class="inline-template-cost">${tpl.cost}h</span>
+      </div>
+    `).join('');
+    return `
+      <div class="inline-action-content" data-agent-id="${agentId}" data-agent-name="${agentName}">
+        <div class="inline-action-header">
+          <strong>${t("add-action")} ${t("for")}: ${agentName}</strong>
+          <button type="button" class="inline-action-close" title="${t("close")}">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="inline-action-templates">
+          ${templatesHTML}
+        </div>
+        <div class="inline-action-custom">
+          <div class="inline-action-custom-label">${t("or-create-custom")}:</div>
+          <div class="inline-action-custom-row">
+            <input type="text" class="inline-custom-name" placeholder="${t("action-name-placeholder")}" />
+            <input type="number" class="inline-custom-cost" placeholder="h" min="1" max="12" style="width:50px;" />
+            <button type="button" class="inline-action-add-custom">
+              <i class="fas fa-plus"></i> ${t("add-action")}
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
   static resetAgentTimeTracking() {
     if (game.user.isGM) {
       game.settings.set("from-time-management", "agentTimeTracking", {});
@@ -639,23 +753,33 @@ export class AgentTrackerDialog extends foundry.applications.api.DialogV2 {
   }
 
   async _onRender(context, options) {
-    console.log("[FROM-TM] AgentTrackerDialog _onRender called");
     await super._onRender(context, options);
     const root = this.element;
-    console.log("[FROM-TM] root element:", root);
 
     // Użyj event delegation - dodaj listenery tylko raz
-    if (this._eventsBound) {
-      console.log("[FROM-TM] Events already bound, skipping");
-      return;
-    }
+    if (this._eventsBound) return;
     this._eventsBound = true;
-    console.log("[FROM-TM] Binding events via delegation");
 
     // Event delegation dla wszystkich kliknięć
     root.addEventListener('click', async (e) => {
-      const target = e.target.closest('button, .day-header');
+      const target = e.target.closest('button, .day-header, .inline-action-template, .inline-action-close');
       if (!target) return;
+
+      // Agent visibility toggle (GM only)
+      if (target.classList.contains('agent-visibility-btn') && game.user.isGM) {
+        const agentId = target.dataset.agentId;
+        const hiddenAgents = foundry.utils.duplicate(game.settings.get("from-time-management", "hiddenAgents") || []);
+        const idx = hiddenAgents.indexOf(agentId);
+        if (idx >= 0) {
+          hiddenAgents.splice(idx, 1);
+        } else {
+          hiddenAgents.push(agentId);
+        }
+        await game.settings.set("from-time-management", "hiddenAgents", hiddenAgents);
+        this.refreshContent();
+        game.socket.emit("module.from-time-management", { operation: "forceRefreshAgentTracker" });
+        return;
+      }
 
       // Day header expand/collapse
       if (target.classList.contains('day-header')) {
@@ -669,20 +793,16 @@ export class AgentTrackerDialog extends foundry.applications.api.DialogV2 {
 
       // Day mode button
       if (target.id === 'day-mode-btn' && game.user.isGM) {
-        console.log("[FROM-TM] Day mode button clicked");
         await game.settings.set("from-time-management", "trackingMode", "day");
-        this.close();
-        setTimeout(() => AgentTrackerDialog.show(), 100);
+        this.refreshContent();
         game.socket.emit("module.from-time-management", { operation: "forceRefreshAgentTracker" });
         return;
       }
 
       // Night mode button
       if (target.id === 'night-mode-btn' && game.user.isGM) {
-        console.log("[FROM-TM] Night mode button clicked");
         await game.settings.set("from-time-management", "trackingMode", "night");
-        this.close();
-        setTimeout(() => AgentTrackerDialog.show(), 100);
+        this.refreshContent();
         game.socket.emit("module.from-time-management", { operation: "forceRefreshAgentTracker" });
         return;
       }
@@ -697,7 +817,7 @@ export class AgentTrackerDialog extends foundry.applications.api.DialogV2 {
         return;
       }
 
-      // Add action button
+      // Add action button — toggle inline panel
       if (target.classList.contains('add-action-btn')) {
         const agentId = target.dataset.agentId;
         const agentName = target.dataset.agentName;
@@ -705,9 +825,64 @@ export class AgentTrackerDialog extends foundry.applications.api.DialogV2 {
           ui.notifications.warn(game.i18n.localize("from-time-management.only-own-characters") || "You can only add actions to your own characters!");
           return;
         }
-        ActionSelectionDialog.show(agentId, agentName, async (agentId, agentName, actionName, actionCost) => {
+        // Znajdź inline panel w bieżącym agent-entry
+        const agentEntry = target.closest('.agent-entry');
+        const panel = agentEntry?.querySelector('.inline-action-panel');
+        if (panel) {
+          if (panel.style.display === 'none' || !panel.style.display) {
+            panel.innerHTML = AgentTrackerDialog.generateInlineActionPanel(agentId, agentName);
+            panel.style.display = 'block';
+          } else {
+            panel.style.display = 'none';
+            panel.innerHTML = '';
+          }
+        }
+        return;
+      }
+
+      // Inline action panel — select template
+      if (target.classList.contains('inline-action-template') || target.closest('.inline-action-template')) {
+        const tpl = target.closest('.inline-action-template');
+        if (!tpl) return;
+        const actionName = tpl.dataset.name;
+        const actionCost = parseInt(tpl.dataset.cost);
+        const content = tpl.closest('.inline-action-content');
+        const agentId = content?.dataset.agentId;
+        const agentName = content?.dataset.agentName;
+        if (agentId && actionName && actionCost > 0) {
           await addActionToQueue(agentId, agentName, actionName, actionCost);
-        });
+          // Zamknij panel po dodaniu
+          const panel = tpl.closest('.inline-action-panel');
+          if (panel) { panel.style.display = 'none'; panel.innerHTML = ''; }
+        }
+        return;
+      }
+
+      // Inline action panel — custom action add
+      if (target.classList.contains('inline-action-add-custom') || target.closest('.inline-action-add-custom')) {
+        const btn = target.closest('.inline-action-add-custom');
+        const content = btn?.closest('.inline-action-content');
+        if (!content) return;
+        const agentId = content.dataset.agentId;
+        const agentName = content.dataset.agentName;
+        const nameInput = content.querySelector('.inline-custom-name');
+        const costInput = content.querySelector('.inline-custom-cost');
+        const actionName = nameInput?.value?.trim();
+        const actionCost = parseInt(costInput?.value);
+        if (actionName && actionCost > 0) {
+          await addActionToQueue(agentId, agentName, actionName, actionCost);
+          const panel = content.closest('.inline-action-panel');
+          if (panel) { panel.style.display = 'none'; panel.innerHTML = ''; }
+        } else {
+          ui.notifications.warn(game.i18n.localize("from-time-management.select-action-or-enter-data") || "Enter action name and cost.");
+        }
+        return;
+      }
+
+      // Inline action panel — close button
+      if (target.classList.contains('inline-action-close') || target.closest('.inline-action-close')) {
+        const panel = target.closest('.inline-action-panel');
+        if (panel) { panel.style.display = 'none'; panel.innerHTML = ''; }
         return;
       }
 
@@ -735,7 +910,6 @@ export class AgentTrackerDialog extends foundry.applications.api.DialogV2 {
 
       // Time adjust buttons
       if (target.classList.contains('time-adjust-btn') && game.user.isGM) {
-        console.log("[FROM-TM] Time adjust button clicked");
         const agentId = target.dataset.agentId;
         const adjustment = parseFloat(target.dataset.adjustment);
         const trackingMode = game.settings.get("from-time-management", "trackingMode") || "day";
@@ -747,8 +921,7 @@ export class AgentTrackerDialog extends foundry.applications.api.DialogV2 {
         else nightTimes[agentId] = value;
         await game.settings.set("from-time-management", "agentDayTimeTracking", dayTimes);
         await game.settings.set("from-time-management", "agentNightTimeTracking", nightTimes);
-        this.close();
-        setTimeout(() => AgentTrackerDialog.show(), 100);
+        this.refreshContent();
         game.socket.emit("module.from-time-management", { operation: "forceRefreshAgentTracker" });
         ui.notifications.info(game.i18n.localize("from-time-management.time-adjusted") || "Time adjusted");
         return;
@@ -759,31 +932,14 @@ export class AgentTrackerDialog extends foundry.applications.api.DialogV2 {
 
 // --- Synchronizacja AgentTrackerDialog przez socket ---
 Hooks.on("ready", () => {
-  console.log("[FROM-TM] Socket listener registered");
   game.socket.on("module.from-time-management", async (data) => {
-    console.log("[FROM-TM] Socket message received:", data);
-    
-    // Handle addActionToQueue from players
     if (data?.operation === "addActionToQueue" && game.user.isGM) {
-      console.log("[FROM-TM] Adding action to queue from player request");
       await addActionToQueue(data.agentId, null, data.actionName, data.actionCost);
       return;
     }
-    
-    // Handle forceRefreshAgentTracker
     if (data?.operation === "forceRefreshAgentTracker") {
-      console.log("[FROM-TM] Refreshing agent tracker dialogs");
-      
       const instance = AgentTrackerDialog.getInstance();
-      console.log("[FROM-TM] AgentTrackerDialog instance:", instance);
-      
-      if (instance) {
-        console.log("[FROM-TM] Closing and reopening AgentTrackerDialog...");
-        instance.close();
-        setTimeout(() => AgentTrackerDialog.show(), 100);
-      } else {
-        console.log("[FROM-TM] No AgentTrackerDialog instance found");
-      }
+      if (instance) instance.refreshContent();
     }
   });
 });

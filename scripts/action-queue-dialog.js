@@ -16,6 +16,48 @@ export class ActionQueueDialog extends foundry.applications.api.DialogV2 {
     return ActionQueueDialog._instance;
   }
 
+  /**
+   * Odświeża tylko zawartość okna bez zamykania/otwierania.
+   * Zachowuje pozycję, rozmiar i stan okna.
+   */
+  refreshContent() {
+    const contentEl = this.element?.querySelector('.window-content');
+    if (!contentEl) {
+      this.render(true);
+      return;
+    }
+    const newHTML = ActionQueueDialog.generateActionQueueContent();
+    // Zapisz scroll przed nadpisaniem
+    const actionList = contentEl.querySelector('.action-list');
+    const scrollTop = actionList ? actionList.scrollTop : 0;
+    // Podmień tylko .action-queue-window
+    const innerContent = contentEl.querySelector('.action-queue-window');
+    if (innerContent) {
+      const temp = document.createElement('div');
+      temp.innerHTML = newHTML;
+      const newNode = temp.firstElementChild;
+      if (newNode) innerContent.replaceWith(newNode);
+    } else {
+      contentEl.innerHTML = newHTML;
+    }
+    // Zaktualizuj tytuł okna (zawiera liczbę akcji)
+    const titleEl = this.element?.querySelector('.window-title');
+    if (titleEl) {
+      titleEl.textContent = `${game.i18n.localize('from-time-management.action-queue') || 'Action Queue'} (${ActionQueueDialog.getActionQueue().length})`;
+    }
+    // Przywróć scroll
+    const newActionList = contentEl.querySelector('.action-list');
+    if (newActionList) newActionList.scrollTop = scrollTop;
+  }
+
+  /**
+   * Statyczna metoda odświeżająca aktywną instancję.
+   */
+  static refreshAll() {
+    const instance = ActionQueueDialog._instance;
+    if (instance) instance.refreshContent();
+  }
+
   constructor() {
     const content = ActionQueueDialog.generateActionQueueContent();
     const buttons = ActionQueueDialog.buildButtons();
@@ -75,12 +117,8 @@ export class ActionQueueDialog extends foundry.applications.api.DialogV2 {
         label: game.i18n.localize("from-time-management.clear-completed") || "Clear Completed",
         callback: async (html) => {
           await ActionQueueDialog.clearCompletedActions();
-          // Odswież dialog
-          const instance = ActionQueueDialog.getInstance();
-          if (instance) {
-            instance.close();
-            setTimeout(() => ActionQueueDialog.show(), 100);
-          }
+          // Odświeź dialog
+          ActionQueueDialog.refreshAll();
           // Wyślij socket do graczy
           game.socket.emit("module.from-time-management", { operation: "forceRefreshActionQueue" });
         }
@@ -277,11 +315,7 @@ export class ActionQueueDialog extends foundry.applications.api.DialogV2 {
         await game.settings.set('from-time-management', 'actionQueue', queue);
         
         // Odśwież dialog lokalnie
-        const instance = ActionQueueDialog.getInstance();
-        if (instance) {
-          instance.close();
-          setTimeout(() => ActionQueueDialog.show(), 100);
-        }
+        ActionQueueDialog.refreshAll();
         
         // Wyślij socket do graczy
         game.socket.emit("module.from-time-management", { operation: "forceRefreshActionQueue" });
@@ -314,11 +348,7 @@ export class ActionQueueDialog extends foundry.applications.api.DialogV2 {
         await game.settings.set('from-time-management', 'actionQueue', queue);
         
         // Odśwież dialog lokalnie
-        const instance = ActionQueueDialog.getInstance();
-        if (instance) {
-          instance.close();
-          setTimeout(() => ActionQueueDialog.show(), 100);
-        }
+        ActionQueueDialog.refreshAll();
         
         // Wyślij socket do graczy
         game.socket.emit("module.from-time-management", { operation: "forceRefreshActionQueue" });
@@ -332,13 +362,8 @@ Hooks.on("ready", () => {
   game.socket.on("module.from-time-management", async (data) => {
     // Handle forceRefreshActionQueue
     if (data?.operation === "forceRefreshActionQueue") {
-      console.log("[FROM-TM] Refreshing action queue dialog");
       const instance = ActionQueueDialog.getInstance();
-      if (instance) {
-        console.log("[FROM-TM] Closing and reopening ActionQueueDialog...");
-        instance.close();
-        setTimeout(() => ActionQueueDialog.show(), 100);
-      }
+      if (instance) instance.refreshContent();
     }
   });
 });

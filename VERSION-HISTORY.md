@@ -1,6 +1,34 @@
 # FROM Time Management System - Version History
 
-## Version 2.0.4 (2025-12-08) - CURRENT RELEASE
+## Version 2.1.0 (2026-02-18) - CURRENT RELEASE
+**✨ UI OVERHAUL: FLICKER-FREE DIALOGS, INLINE ACTIONS & GM CONTROLS**
+
+### Critical Fixes
+- ✅ **No More Flickering**: `refreshContent()` replaces dialog content in-place — no close/reopen cycle
+- ✅ **No Duplicate Dialogs**: Socket events no longer spawn multiple dialog instances
+- ✅ **Archive Dialog Theming**: Uses Foundry CSS variables — correct in both light and dark themes
+- ✅ **Action Selection in PopOut!**: Replaced broken separate window with fully embedded inline panel
+
+### New Features
+- ✅ **Inline Action Panel**: "Add Action" expands a panel directly inside the tracker row
+- ✅ **Multi-Player Simultaneous Panels**: Each player can have their own panel open at the same time
+- ✅ **Panel State Preservation**: Typed text and open panels survive `refreshContent()` updates seamlessly
+- ✅ **GM Agent Visibility Toggle**: Eye-icon button per agent hides/shows agents from players; state persisted in world settings
+
+### Performance & Cleanup
+- ✅ **23 Console Logs Removed**: No more debug noise in the browser console during sessions
+- ✅ Files cleaned: `main.mjs`, `agent-tracker-dialog.js`, `action-queue-dialog.js`, `time-management-dialog.js`
+
+### Technical Architecture
+- `AgentTrackerDialog.refreshContent()` / `refreshAll()` — flicker-free in-place DOM update
+- `ActionQueueDialog.refreshContent()` / `refreshAll()` — same pattern for action queue
+- `generateInlineActionPanel(agentId)` — inline template selector + custom input per agent
+- `hiddenAgents` world setting — GM visibility preferences persisted across sessions
+- CSS variables throughout for proper light/dark theme support
+
+---
+
+## Version 2.0.4 (2025-12-08)
 **🔧 BUG FIX: TIME SYNCHRONIZATION**
 
 ### Critical Fix

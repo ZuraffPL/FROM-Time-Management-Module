@@ -5,6 +5,39 @@ All notable changes to the FROM Time Management System will be documented in thi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.0] - 2026-02-18
+
+### ✨ UI OVERHAUL: FLICKER-FREE DIALOGS, INLINE ACTIONS & GM CONTROLS
+
+Major quality-of-life release focused on eliminating dialog flickering, improving PopOut! compatibility, enabling simultaneous multiplayer action selection and adding a GM-only agent visibility toggle.
+
+### Fixed
+- **Dialog Flickering**: Agent Tracker and Action Queue dialogs no longer close and reopen when state changes. All updates now use an in-place DOM replacement (`refreshContent()`) that preserves scroll position without any visible flicker.
+- **Multiple Dialog Instances**: Eliminated the bug where socket events could spawn duplicate dialog instances with incrementing IDs.
+- **Archive Dialog Readability**: Archive dialog previously used hardcoded dark-theme colors (`#1a1a1a`, white text). Now uses Foundry CSS variables (`--color-text-primary`, `--color-text-secondary`, `--color-border-light-primary`, `--color-bg-option`) for correct appearance in both light and dark themes.
+- **Action Selection in PopOut! Context**: Separate `ActionSelectionDialog` window failed to render when the Agent Tracker was popped out to a separate browser window. Replaced with an inline panel embedded directly in the tracker DOM.
+
+### Added
+- **Inline Action Panel**: Clicking "Add Action" now expands an inline panel within the tracker row instead of opening a separate window. Works in any context including PopOut! windows.
+- **Multi-Player Simultaneous Action Selection**: Multiple players can have their own inline panels open at the same time. Each panel is local to the client and does not affect other users' views.
+- **Panel State Preservation**: `refreshContent()` saves and restores any open inline panel (including typed custom action text) before and after each DOM refresh, so updates are truly seamless.
+- **GM Agent Visibility Toggle**: GM-only eye icon (👁) button on each agent row. Click to hide/show an agent for non-GM players. Hidden state persisted in world settings (`hiddenAgents`). Hidden agents are shown with a dimmed style for the GM and completely hidden for players.
+
+### Improved
+- **Performance**: Removed all 23 debug `console.log` statements from `main.mjs`, `agent-tracker-dialog.js`, `action-queue-dialog.js`, and `time-management-dialog.js`. Console is no longer flooded during normal play.
+
+### Technical Details
+- `AgentTrackerDialog.refreshContent()` — replaces `.agent-tracker-window` inner HTML only
+- `AgentTrackerDialog.refreshAll()` — static helper called by socket and settings change handlers
+- `ActionQueueDialog.refreshContent()` / `refreshAll()` — same pattern for action queue
+- `generateInlineActionPanel(agentId)` — renders inline template selector + custom input
+- `generateAgentTrackerContent()` — filters `hiddenAgents` setting for non-GM users
+- `generateAgentHTML()` — adds eye-icon button (GM only) and `agent-hidden` CSS class
+- New world setting `hiddenAgents` (type: `Object`) stores GM visibility preferences
+- CSS: `.inline-action-*` classes for inline panel layout; `.agent-visibility-btn`, `.agent-entry.agent-hidden` for visibility toggle
+
+---
+
 ## [2.0.4] - 2025-12-08
 
 ### 🔧 BUG FIX: TIME SYNCHRONIZATION

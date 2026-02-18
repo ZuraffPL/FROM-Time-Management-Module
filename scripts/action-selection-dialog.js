@@ -26,12 +26,16 @@ export class ActionSelectionDialog extends foundry.applications.api.DialogV2 {
       <div class="action-selection-dialog">
         <h3>${t("add-action")} ${t("for")}: <strong>${agentName}</strong></h3>
         <h4>${t("choose-action-template")}:</h4>
-        <div class="action-templates">
-          ${templatesHTML}
+        <div class="action-templates-scroll">
+          <div class="action-templates">
+            ${templatesHTML}
+          </div>
         </div>
-        <h4>${t("or-create-custom")}:</h4>
-        <input type="text" class="custom-action-input" id="custom-action-name" placeholder="${t("action-name-placeholder")}" />
-        <input type="number" class="custom-action-input" id="custom-action-cost" placeholder="${t("cost-in-hours-placeholder")}" min="1" max="12" />
+        <div class="custom-action-section">
+          <h4>${t("or-create-custom")}:</h4>
+          <input type="text" class="custom-action-input" id="custom-action-name" placeholder="${t("action-name-placeholder")}" />
+          <input type="number" class="custom-action-input" id="custom-action-cost" placeholder="${t("cost-in-hours-placeholder")}" min="1" max="12" />
+        </div>
       </div>
     `;
     super({
@@ -68,9 +72,9 @@ export class ActionSelectionDialog extends foundry.applications.api.DialogV2 {
         }
       ]
     }, {
-      width: 400,
-      height: 'auto',
-      resizable: false,
+      width: 420,
+      height: 580,
+      resizable: true,
       popOut: true
     });
     this.agentId = agentId;

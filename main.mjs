@@ -2,12 +2,8 @@ import { TimeManagementDialog } from "./scripts/time-management-dialog.js";
 import { AgentTrackerDialog } from "./scripts/agent-tracker-dialog.js";
 import { ActionQueueDialog } from "./scripts/action-queue-dialog.js";
 
-console.log("[FROM-TM] main.mjs start");
-
 // Rejestracja własnej grupy narzędzi
 Hooks.on("getSceneControlButtons", controls => {
-  console.log("[FROM-TM] getSceneControlButtons hook fired");
-  console.log("[FROM-TM] controls type:", typeof controls, "isArray:", Array.isArray(controls));
   
   // Foundry v13+ uses object structure, not array
   // Add tools to existing controls object
@@ -49,7 +45,6 @@ Hooks.on("getSceneControlButtons", controls => {
     button: true
   };
   
-  console.log("[FROM-TM] Custom controls group 'fromtimemanagement' added");
 });
 
 // Rejestracja wymaganych settings dla AgentTrackerDialog i systemu
@@ -110,20 +105,24 @@ Hooks.once("init", () => {
     type: Object,
     default: {}
   });
+  // hiddenAgents: [agentId, ...] — lista ukrytych agentów (widocznych tylko dla GM)
+  game.settings.register("from-time-management", "hiddenAgents", {
+    name: "Hidden Agents",
+    scope: "world",
+    config: false,
+    type: Object,
+    default: []
+  });
 });
 
 // Socket listener dla odbieżania zdarzeń z serwera
 Hooks.once("ready", () => {
   if (game.socket) {
     game.socket.on("module.from-time-management", (data) => {
-      console.log("[FROM-TM] Socket event received:", data);
-      
       // Odśwież tracker dialog gdy zmieni się czas
       if (data.type === "timeChanged") {
-        // Znajdź otwarte okna AgentTrackerDialog i odśwież je
         for (const win of Object.values(ui.windows)) {
           if (win.constructor.name === "AgentTrackerDialog") {
-            console.log("[FROM-TM] Refreshing AgentTrackerDialog due to time change");
             win.render(true);
           }
         }
