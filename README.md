@@ -2,346 +2,231 @@
 
 A comprehensive time management module for Delta Green RPG sessions in Foundry VTT, inspired by the mechanics of the FROM TV series.
 
-> **Latest Version: 2.0.4** - 🔧 **BUG FIX**: Fixed Agent Tracker time display synchronization with Time Management Dialog for real-time updates! [See release notes](CHANGELOG.md#204---2025-12-08) for complete details.
+> **Current Version: 2.1.0** — ✨ **UI OVERHAUL**: Flicker-free dialogs, inline action panels, GM agent visibility toggle.
+> [See full changelog](CHANGELOG.md) for complete history.
 
-## 🚀 Version Highlights
+---
 
-### v2.0.0 - DialogV2 Migration & Smart Archiving
-- ✅ **Complete DialogV2 Migration** - All dialogs modernized for Foundry VTT v13+
-- ✅ **Smart Completed Actions Archiving** - "Clear Completed" replaces "Clear All"
-- ✅ **Zero Deprecation Warnings** - Future-proof architecture with modern APIs
-- ✅ **Native DOM Event Handling** - jQuery completely removed from all dialogs
-- ✅ **Singleton Pattern Implementation** - Prevents duplicate dialog instances
+## ✨ What's New in v2.1.0
 
-### v1.4.0 - Resizable Dialogs
-- ✅ **Resizable Dialog Windows** - All major dialogs support dynamic resizing
-- ✅ **Proportional Content Scaling** - UI elements scale intelligently with window size
-- ✅ **High-Resolution Display Support** - Optimized for 1440p, 4K, and ultrawide monitors
-- ✅ **Dynamic Font Sizing** - Text scales using clamp() for optimal readability
+- **No more flickering** — Agent Tracker and Action Queue update in-place without closing/reopening
+- **Inline Action Panel** — "Add Action" expands directly inside the tracker row; works in PopOut! windows
+- **Multi-player simultaneous panels** — every player can have their own panel open at the same time
+- **GM Agent Visibility Toggle** — eye-icon (👁) per agent hides/shows agents from players
+- **Theme-aware archive dialog** — uses Foundry CSS variables, correct in light and dark themes
+- **Cleaner console** — all 23 debug `console.log` statements removed
 
-### v1.3.0 - UI/UX & Popout Support
-- ✅ **Popout Window Support** - All dialogs can be popped out into separate windows
-- ✅ **Enhanced Dialog Management** - Better window handling and positioning
-- ✅ **Action Queue Visual Fixes** - Fixed button stretching and improved readability
-- ✅ **Completed Action Styling** - Better contrast and visibility for finished actions
-
-### v1.2.0 - Foundry v13 Ready
-- ✅ **Full Foundry VTT v13 Compatibility** - Enhanced scene control system
-- ✅ **Multi-layer Registration** - Primary hook + intelligent fallbacks ensure 100% reliability  
-- ✅ **Cross-Version Support** - Works seamlessly on v12.331 through v13.348
-- ✅ **Zero Configuration** - Automatic version detection and appropriate handling
-
-### v1.1.0 - Multiplayer Perfection  
-- 🎯 **Critical Multiplayer Fix** - GM agent time adjustments sync instantly to all players
-- 🔄 **Socket Communication Overhaul** - Bulletproof real-time synchronization
-- 📡 **Late-Join Support** - Players connecting mid-session get full data sync
-
-### v1.0.5 - Data Persistence Revolution
-- 💾 **File-Based Archive Storage** - Individual JSON files per agent ensure data survives restarts
-- 🔄 **Automatic Migration** - Seamless upgrade from old settings-based storage
-- 🛡️ **Dual Storage System** - Files + settings backup for maximum reliability
+---
 
 ## Features
 
 ### 🕐 Time Management
 - Real-time game clock with day/hour tracking
 - "Day in Town" counter for extended stays
-- GM-controlled time settings and updates
+- GM-controlled time settings and real-time broadcast to all clients
 - Automatic time progression with manual override
 
 ### 👥 Agent Activity Tracking
-- Individual progress bars for each agent
-- Separate day/night time tracking (12 hours each)
-- Visual progress indicators with color-coded warnings
-- Real-time synchronization across all clients
+- Individual progress bars for each agent (day and night separately)
+- Visual color-coded warnings: green → orange → red as time fills
+- GM eye-icon (👁) to hide/show individual agents from players
+- Real-time synchronization across all clients via socket events
 
 ### 📋 Action Queue System
-- Pre-defined action templates with time costs
-- Custom action creation for unique scenarios
-- Automatic time allocation to agents
-- Overflow handling between day/night periods
-- Completion tracking and queue management
+- Pre-defined action templates with configurable time costs
+- Custom action creation
+- Automatic time allocation per agent with day/night overflow handling
+- Completion tracking and per-action delete
 
-### 📚 Action Archive System
-- **Complete Action History**: Permanent storage of all agent actions throughout the campaign
-- **Day-based Organization**: Actions grouped by day with collapsible sections for easy navigation
-- **Individual Agent Archives**: Personal archive window for each agent accessible via "Archive Actions" button
-- **Detailed Action Records**: Full preservation of action details, timestamps, and context
-- **Bulletproof Persistence (v1.0.5+)**: Revolutionary file-based storage system ensures data survives Foundry restarts
-  - Individual JSON files per agent stored in world directory
-  - Automatic migration from old settings-based storage
-  - Dual storage approach (files + settings backup) for maximum reliability
-- **Never Lose Data**: Actions are archived, never truly deleted, ensuring complete campaign history
+### 📚 Action Archive
+- Permanent history of all agent actions throughout the campaign
+- Organized by day with collapsible sections
+- Individual archive window per agent
+- Persists across Foundry restarts
 
 ### 🎨 Agent Visual Themes
-- **Unique Visual Identity**: 10 distinct horror-themed gradient backgrounds for each agent
-- **Automatic Assignment**: Hash-based color themes ensure consistent appearance per agent
-- **Enhanced Recognition**: Easy agent identification at a glance in multi-agent scenarios
-- **Atmospheric Design**: Maintains Delta Green horror aesthetic while improving usability
+- 10 distinct horror-themed gradient backgrounds, hash-assigned per agent
+- Consistent appearance for the same agent across all sessions
 
-### 🔄 Real-time Synchronization
-- **Rock-Solid Multiplayer (v1.1.0)**: Complete socket communication overhaul ensures GM actions sync instantly to all players
-- **Agent Time Adjustments**: GM's +1h/-1h buttons now update all players' progress bars in real-time
-- **Bulletproof Connection**: Multiple initialization points and retry logic prevent sync failures
-- **Late-Join Support**: Players connecting mid-session receive full data synchronization
-- Socket-based multiplayer synchronization
-- Automatic UI updates across all connected clients
-- Permission system (players manage own characters, GM controls all)
-- Persistent data storage in world settings
+### 🔄 Real-time Multiplayer
+- Socket-based synchronization (`module.from-time-management`)
+- Flicker-free `refreshContent()` updates — no duplicate dialog instances
+- Late-join support: players connecting mid-session get full sync
+- Permission model: players manage own characters, GM controls all
 
 ### 🌅 Day/Night Cycles
-- Visual mode switching between day and night tracking
-- Automatic overflow between periods when limits exceeded
-- Confirmation dialogs for time limit violations
-- "New Day" functionality to reset all progress
+- Toggle between Day and Night tracking modes
+- Overflow automatically moves to the opposite period
+- "New Day" resets all agent progress and advances the day counter
 
-### 🎭 Action Templates
-- **Short Rest** (1h) - Quick recuperation
-- **NPC Conversation** (1h) - Social interactions
-- **Explore Near Town** (3h) - Local area investigation  
-- **Investigate Location** (1h) - Detailed examination
-- **Meal at Diner** (1h) - Food and social time
-- **Medical Care** (2h) - Treatment for light wounds
-- **Travel Town ↔ Colony House** (1h) - Transportation
-- **Forest Exploration** (6h) - Extended wilderness search
+---
+
+## 🎭 Default Action Templates
+
+| Template | Time |
+|---|---|
+| Short Rest | 1h |
+| NPC Conversation | 1h |
+| Investigate Location | 1h |
+| Meal at Diner | 1h |
+| Travel Town ↔ Colony House | 1h |
+| Medical Care | 2h |
+| Explore Near Town | 3h |
+| Forest Exploration | 6h |
+
+---
 
 ## 🔧 Compatibility
 
-- **Foundry VTT**: v12.331 - v13.350+ (verified)
-- **Recommended**: v13+ for full DialogV2 support
-- **System**: Delta Green (primary), adaptable to other systems
-- **Dependencies**: None (standalone module)
-- **Multiplayer**: Full support for multiple GMs and players
+| | |
+|---|---|
+| **Foundry VTT** | v12.331 – v13.351+ (verified) |
+| **Recommended** | v13+ for full DialogV2 support |
+| **System** | Delta Green (primary); adaptable to other systems |
+| **Dependencies** | None — standalone module |
+| **PopOut! module** | ✅ Fully compatible |
+
+---
 
 ## Installation
 
+### Via Foundry Module Browser
+1. In Foundry VTT go to **Add-on Modules → Install Module**
+2. Search for `FROM Time Management`
+3. Click **Install** and enable in your world
+
 ### Manual Installation
-1. Download the latest release from the [releases page](https://github.com/ZuraffPL/FROM-Time-Management-Module/releases)
-2. Extract the contents to your Foundry `Data/modules/` directory
-3. Restart Foundry VTT
-4. Enable the module in your world's module settings
+1. Download `from-time-management-v2.1.0.zip` from the [releases page](https://github.com/ZuraffPL/FROM-Time-Management-Module/releases)
+2. Extract to your `Data/modules/` directory
+3. Restart Foundry VTT and enable the module in your world
 
-### Foundry Module Browser
-1. In Foundry VTT, go to "Add-on Modules"
-2. Click "Install Module"
-3. Search for "FROM Time Management"
-4. Click "Install" and enable in your world
+### Manifest URL
+```
+https://github.com/ZuraffPL/FROM-Time-Management-Module/releases/latest/download/module.json
+```
 
-### Upgrading to v1.0.5+
-If you're upgrading from v1.0.4 or earlier:
-- **Automatic Migration**: Your existing action archive data will be automatically migrated to the new file-based system on first launch
-- **Backup Created**: Your old data remains in world settings as a backup
-- **No Manual Action Required**: The upgrade is seamless and preserves all existing data
-- **File Location**: New archive files will be created in `Data/worlds/[your-world]/from-time-management-agent-[ID].json`
+---
 
 ## Usage
 
 ### For Game Masters
 
-#### Basic Setup
-1. Click the clock icon (🕐) in the token controls to open the Time Management dialog
-2. Set the initial time, day, and year as needed
-3. Use "New Day in Town" to advance the calendar and reset agent progress
+#### Time Management Dialog (🕐)
+- **Set Time** — manually set the current game time
+- **Broadcast Time** — send current time to all players via chat
+- **New Day** — resets all agent progress bars and advances the day counter
 
-#### Managing Time
-- **Set Time**: Manually adjust the current game time
-- **Broadcast Time**: Send current time to all players via chat
-- **Whisper Time**: Save time information privately for GM reference
-- **New Day**: Reset all agent progress bars and advance the day counter
+#### Agent Tracker (👥)
+- Switch between **Day Time** and **Night Time** tracking modes
+- Use **+1h / -1h** buttons to manually calibrate individual agent time
+- Click **Add Action** to open an inline panel with templates or custom input
+- Click the **👁 eye icon** (GM only) to hide/show an agent from players
+- Click **Archive Actions** to browse an agent's full action history
 
-#### Agent Tracking
-1. Click the users icon (👥) to open the Agent Activity Tracker
-2. Switch between "Day Time" and "Night Time" modes
-3. Add actions for agents using the "Add Action" button
-4. **View Action Archives**: Click "Archive Actions" next to each agent to see complete action history
-5. **Use Time Calibration**: GM can manually adjust agent time using +1h/-1h buttons next to progress bars
-6. **Visual Agent Themes**: Each agent has a unique gradient background for easy identification
-7. Monitor progress bars - colors indicate time usage:
-   - **Green**: Normal time usage (0-8 hours)
-   - **Orange**: Warning level (8-10 hours)
-   - **Red**: Danger level (10-12 hours)
-
-#### Action Archive Management
-1. Click "Archive Actions" button next to any agent in the tracker
-2. Browse complete action history organized by day
-3. Expand/collapse day sections to focus on specific periods
-4. View detailed information including action type, time, and mode
-5. Archive persists across sessions - never lose track of agent activities
-
-#### Action Queue Management
-1. Click the clipboard icon (📋) to view the Action Queue
-2. Mark actions as completed using checkboxes
-3. **Clear Completed Actions**: Use "Clear Completed" button to archive and remove finished actions
-   - Only removes actions marked as completed
-   - Automatically archives them to respective agents
-   - Preserves active/pending actions in the queue
-   - Shows confirmation with count of archived actions
-4. Delete individual actions using the trash icon
-5. Monitor agent workloads and time allocation
+#### Action Queue (📋)
+- Mark actions as completed with checkboxes
+- **Clear Completed** archives finished actions to respective agents
+- Delete individual actions with the trash icon
 
 ### For Players
 
-#### Viewing Progress
-- Access the Agent Activity Tracker to see your character's progress
-- View the Action Queue to see all pending and completed actions
-- Receive time updates via chat when GM broadcasts
+- Open the **Agent Tracker** to view your character's progress bars
+- Click **Add Action** to add time to your character
+- Click **Archive Actions** to review your full action history
+- Receive time updates via chat when the GM broadcasts
 
-#### Adding Actions
-1. Open the Agent Activity Tracker
-2. Click "Add Action" for your character
-3. Choose from pre-defined templates or create custom actions
-4. Actions automatically apply to your character's time tracking
-5. **Access Your Archive**: Click "Archive Actions" to review your complete action history
-6. **Visual Identity**: Your character has a unique gradient background theme for easy recognition
-
-#### Time Overflow
-- When actions exceed time limits, you'll see confirmation dialogs
-- Overflow time automatically moves to the opposite period (day↔night)
-- Plan activities carefully to avoid exhaustion
+---
 
 ## Configuration
 
-The module uses world-level settings stored automatically:
-- Current game time and date
-- Agent time tracking data (day/night)
-- Action queue contents
-- Tracking mode preferences
+All state is stored automatically in world-level Foundry settings — no manual configuration required.
 
-No manual configuration required - everything is handled through the UI.
+| Setting | Description |
+|---|---|
+| `currentGameTime` | Current in-game time and date |
+| `agentDayTimeTracking` | Per-agent day-period time usage |
+| `agentNightTimeTracking` | Per-agent night-period time usage |
+| `trackingMode` | Current mode (day / night) |
+| `actionQueue` | All queued and completed actions |
+| `actionArchive` | Complete historical archive |
+| `hiddenAgents` | GM visibility preferences per agent |
+
+---
 
 ## Permissions
 
-- **GM**: Full control over time management, all agent tracking, and system settings
-- **Players**: Can add actions for owned characters, view all tracking information
-- **Observers**: Read-only access to public information
+| Role | Access |
+|---|---|
+| **GM** | Full control: time, all agents, settings, visibility toggles |
+| **Players** | Add actions for owned characters; view all tracking info |
+| **Observers** | Read-only access |
 
-## Compatibility
-
-- **Foundry VTT**: v12.331+
-- **System**: Designed for Delta Green, but adaptable to other modern horror RPGs
-- **Modules**: No dependencies, works alongside other time/calendar modules
+---
 
 ## Localization
 
-Currently supported languages:
-- English (en)
-- Polish (pl)
+| Language | Status |
+|---|---|
+| English | ✅ Full |
+| Polish (pl) | ✅ Full |
 
-Additional language support welcome via pull requests.
+Additional languages welcome via pull request.
+
+---
 
 ## Technical Details
 
-### Architecture (v2.0.0)
-The module is built on modern Foundry VTT v13+ APIs:
-- **DialogV2 API**: All dialogs use `foundry.applications.api.DialogV2` for future-proof compatibility
-- **Native DOM**: Pure JavaScript DOM manipulation (no jQuery dependencies)
-- **Event Delegation**: Efficient event handling for dynamic content
-- **Singleton Pattern**: Prevents duplicate dialog instances and enables socket communication
-- **ES Modules**: Clean import/export structure for maintainability
+### Architecture
+Built on modern Foundry VTT v13+ APIs:
 
-### Socket Events
-The module uses `module.from-time-management` socket events for real-time synchronization:
-- `forceRefreshAgentTracker`: Synchronizes agent tracker across all clients
-- `forceRefreshActionQueue`: Updates action queue for all players
-- `addActionToQueue`: Handles action addition requests from players to GM
-- Operation-based routing for extensibility
-
-### Data Storage
-The module uses a hybrid storage approach for maximum reliability:
-
-#### File-Based Storage (v1.0.5+)
-- **Agent Archives**: Individual JSON files per agent in world directory
-  - Location: `Data/worlds/[world-name]/from-time-management-agent-[ID].json`
-  - Contains complete action history with timestamps and details
-  - Survives Foundry restarts and world reloads
-  - Can be manually backed up, shared, or edited
-
-#### Foundry Settings Storage (Backup)
-All data also persists in Foundry's world settings as backup:
-- `currentGameTime`: Current in-game time and date
-- `agentTimeTracking`: Legacy total time tracking
-- `agentDayTimeTracking`: Day-specific time tracking per agent
-- `agentNightTimeTracking`: Night-specific time tracking per agent
-- `trackingMode`: Current tracking mode (day/night)
-- `actionQueue`: All queued and completed actions
-- `actionArchive`: Complete historical archive (backup for file system)
-
-### Performance
-- Optimized for real-time updates without lag
-- Efficient DOM manipulation and re-rendering
-- Minimal network traffic through targeted socket events
-
-## Development
+- **DialogV2 API** — all dialogs use `foundry.applications.api.DialogV2`
+- **Flicker-free updates** — `refreshContent()` replaces inner DOM only, preserving scroll position and open panels
+- **Inline Action Panel** — embedded directly in tracker DOM, no separate window needed
+- **Socket events** — `forceRefreshAgentTracker`, `forceRefreshActionQueue`, `addActionToQueue`, `timeChanged`
+- **Event delegation** — single root listener with `e.target.closest()` for all buttons
+- **No jQuery** — pure ES module JavaScript
 
 ### Project Structure
 ```
 from-time-management/
-├── main.mjs                          # Module entry point and initialization
-├── module.json                       # Module manifest and metadata
-├── LICENSE                           # MIT license
-├── README.md                         # This file
-├── CHANGELOG.md                      # Detailed version history
-├── VERSION-HISTORY.md                # Version highlights and summaries
-├── .gitignore                        # Git ignore rules
-├── deploy-to-modules.ps1             # Deployment script for testing
-│
-├── scripts/                          # JavaScript modules
-│   ├── time-management-dialog.js    # GM time control dialog (DialogV2)
-│   ├── agent-tracker-dialog.js      # Agent activity tracking (DialogV2)
-│   ├── action-queue-dialog.js       # Action queue management (DialogV2)
-│   ├── action-selection-dialog.js   # Action selection interface (DialogV2)
-│   └── time-management.old.js       # Legacy code (deprecated)
-│
-├── styles/                           # CSS stylesheets
-│   └── time-management.css          # Main stylesheet with responsive design
-│
-└── lang/                            # Localization files
-    ├── en.json                      # English translations
-    └── pl.json                      # Polish translations
+├── main.mjs                         # Entry point: settings, controls, socket listener
+├── module.json                      # Module manifest
+├── scripts/
+│   ├── agent-tracker-dialog.js     # Agent tracking, inline panels, visibility toggle
+│   ├── action-queue-dialog.js      # Action queue with refreshContent pattern
+│   ├── action-selection-dialog.js  # Standalone action selection (legacy fallback)
+│   └── time-management-dialog.js   # GM time control dialog
+├── styles/
+│   └── time-management.css         # All styles, CSS variable-based theming
+└── lang/
+    ├── en.json
+    └── pl.json
 ```
 
-### Building from Source
-```bash
-git clone https://github.com/your-username/from-time-management.git
-cd from-time-management
-# No build process required - pure JavaScript/CSS
-```
+---
 
-### Contributing
+## Contributing
+
 1. Fork the repository
 2. Create a feature branch
-3. Make your changes
-4. Test thoroughly in Foundry VTT 12.331
-5. Submit a pull request
+3. Make your changes and test in Foundry VTT v13+
+4. Submit a pull request
 
-### Reporting Issues
-Please use the [GitHub issue tracker](https://github.com/your-username/from-time-management/issues) for:
-- Bug reports
-- Feature requests
-- Compatibility issues
-- Translation requests
+Report bugs and request features via the [GitHub issue tracker](https://github.com/ZuraffPL/FROM-Time-Management-Module/issues).
+
+---
 
 ## License
 
-This module is licensed under the Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License (CC BY-NC-SA 4.0). See `LICENSE` file for details or visit https://creativecommons.org/licenses/by-nc-sa/4.0/
+[Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)](https://creativecommons.org/licenses/by-nc-sa/4.0/)
+
+---
 
 ## Credits
 
 - **Inspired by**: FROM TV series time mechanics
-- **Designed for**: Delta Green RPG system
+- **Designed for**: Delta Green RPG
 - **Built for**: Foundry Virtual Tabletop
-
-## Support
-
-For support, please:
-1. Check this README for common questions
-2. Search existing issues on GitHub
-3. Create a new issue with detailed information
-4. Include Foundry version, browser, and console errors
-
-## Changelog
-
-See [CHANGELOG.md](CHANGELOG.md) for version history and updates.
 
 ---
 
