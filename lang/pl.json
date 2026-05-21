@@ -96,6 +96,14 @@
     "for": "dla",
     "cancel": "Anuluj",
     "select-action-or-enter-data": "Wybierz akcję lub wprowadź poprawne dane",
-    "completed": "ukończona"
+    "completed": "ukończona",
+    "show-agent": "Pokaż agenta",
+    "hide-agent": "Ukryj agenta",
+    "action-request-sent": "Prośba o dodanie akcji wysłana do MG.",
+    "reset-agent-day-confirm": "Zresetować tracking czasu dla {name}?",
+    "delete-action": "Usuń akcję",
+    "delete-action-confirm": "Usuń akcję",
+    "unknown-player": "Nieznany gracz",
+  "archive-completed": "Archiwizuj ukończone akcje"
   }
 }

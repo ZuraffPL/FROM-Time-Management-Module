@@ -2,19 +2,19 @@
 
 A comprehensive time management module for Delta Green RPG sessions in Foundry VTT, inspired by the mechanics of the FROM TV series.
 
-> **Current Version: 2.1.0** — ✨ **UI OVERHAUL**: Flicker-free dialogs, inline action panels, GM agent visibility toggle.
+> **Current Version: 3.0.0** — 🔧 **FULL v13+ REFACTORING**: ApplicationV2 + HBS templates, reactive sync, critical bug fixes.
 > [See full changelog](CHANGELOG.md) for complete history.
 
 ---
 
-## ✨ What's New in v2.1.0
+## ✨ What's New in v3.0.0
 
-- **No more flickering** — Agent Tracker and Action Queue update in-place without closing/reopening
-- **Inline Action Panel** — "Add Action" expands directly inside the tracker row; works in PopOut! windows
-- **Multi-player simultaneous panels** — every player can have their own panel open at the same time
-- **GM Agent Visibility Toggle** — eye-icon (👁) per agent hides/shows agents from players
-- **Theme-aware archive dialog** — uses Foundry CSS variables, correct in light and dark themes
-- **Cleaner console** — all 23 debug `console.log` statements removed
+- **Critical fixes** — Agent Tracker buttons now work (missing `_onRender` fixed), dialog renders correctly (added `HandlebarsApplicationMixin`), agents visible again (fixed actor type `"agent"` vs `"character"`)
+- **Full Foundry v13+ API compliance** — all dialogs use `HandlebarsApplicationMixin(ApplicationV2)` with separate HBS templates
+- **Reactive real-time sync** — `onChange` callbacks on all world settings; every client auto-refreshes without socket broadcasts
+- **Promise-based Action Selection** — `ActionSelectionDialog.show()` returns `Promise<result|null>`
+- **Archive completed actions button** — GM can archive all completed queue entries in one click
+- **Old actions unstuck** — legacy numeric IDs (from `Date.now()`) now work with string comparison
 
 ---
 

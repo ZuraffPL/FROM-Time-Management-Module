@@ -4,3 +4,4 @@ prepare-release-v*.ps1
 GITHUB-RELEASE-INSTRUCTIONS-v*.md
 RELEASE_NOTES_v*.md
 QUICK-RELEASE-GUIDE-v*.md
+scripts/*.old.js

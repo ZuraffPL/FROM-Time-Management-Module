@@ -1,0 +1,39 @@
+<div class="time-management-system">
+  <div class="current-time">
+    <div>{{localize "from-time-management.current-time"}}</div>
+    <div id="current-time-display">{{timeLabel}}</div>
+  </div>
+
+  <form class="time-section" id="tm-time-form">
+    <h3>{{localize "from-time-management.time-settings"}}</h3>
+    <div class="time-controls">
+      <label for="tm-day">{{localize "from-time-management.day-in-town"}}</label>
+      <input class="time-input" id="tm-day" type="number" name="day" min="1" value="{{time.day}}">
+      <label for="tm-hour">{{localize "from-time-management.hour"}}</label>
+      <input class="time-input" id="tm-hour" type="number" name="hour" min="0" max="23" value="{{time.hour}}">
+      <label for="tm-minute">{{localize "from-time-management.minute"}}</label>
+      <input class="time-input" id="tm-minute" type="number" name="minute" min="0" max="59" value="{{time.minute}}">
+      <label for="tm-year">{{localize "from-time-management.year"}}</label>
+      <input class="time-input" id="tm-year" type="number" name="year" min="1900" max="2100" value="{{time.year}}">
+      <button type="button" class="time-button" data-action="setTime">
+        <i class="fas fa-check"></i> {{localize "from-time-management.set-time"}}
+      </button>
+    </div>
+  </form>
+
+  <div class="broadcast-section">
+    <h3>{{localize "from-time-management.communication"}}</h3>
+    <button type="button" class="time-button" data-action="broadcastTime">
+      {{localize "from-time-management.broadcast-time"}}
+    </button>
+    <button type="button" class="time-button" data-action="whisperTime">
+      {{localize "from-time-management.whisper-time"}}
+    </button>
+  </div>
+
+  <div class="broadcast-section">
+    <button type="button" class="time-button new-day-btn" data-action="newDay">
+      <i class="fas fa-sunrise"></i> {{localize "from-time-management.new-day"}}
+    </button>
+  </div>
+</div>

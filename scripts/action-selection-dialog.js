@@ -1,114 +1,139 @@
-// ActionSelectionDialog - modern dialog for selecting or creating an action for an agent
-export class ActionSelectionDialog extends foundry.applications.api.DialogV2 {
-  static show(agentId, agentName, onActionSelected) {
-    new ActionSelectionDialog(agentId, agentName, onActionSelected).render(true);
+const MODULE_ID = "from-time-management";
+
+/**
+ * Dialog wyboru akcji dla agenta. Zwraca Promise<{ actionName, actionCost }|null>.
+ * Użycie:
+ *   const result = await ActionSelectionDialog.show(agentId, agentName);
+ *   if (result) await addActionToQueue(agentId, agentName, result.actionName, result.actionCost);
+ */
+const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
+
+export class ActionSelectionDialog extends HandlebarsApplicationMixin(ApplicationV2) {
+  #agentId;
+  #agentName;
+  #resolve = null;
+  #selectedTemplate = null;
+
+  static DEFAULT_OPTIONS = {
+    id: `${MODULE_ID}-action-select`,
+    classes: ["from-time-management", "action-selection-dialog"],
+    window: { resizable: false },
+    position: { width: 480, height: "auto" },
+    actions: {
+      confirmAction: ActionSelectionDialog.#onConfirm,
+      cancelAction: ActionSelectionDialog.#onCancel,
+    },
+  };
+
+  static PARTS = {
+    main: { template: `modules/${MODULE_ID}/templates/action-selection.hbs` },
+  };
+
+  constructor({ agentId, agentName } = {}) {
+    super({});
+    this.#agentId = agentId;
+    this.#agentName = agentName;
   }
 
-  constructor(agentId, agentName, onActionSelected) {
-    const t = (key) => game.i18n.localize(`from-time-management.${key}`) || key;
+  get title() {
+    return `${game.i18n.localize(`${MODULE_ID}.add-action`)} — ${this.#agentName}`;
+  }
+
+  /**
+   * Otwiera dialog wyboru akcji i zwraca wybrane dane lub null przy anulowaniu.
+   * Jeśli dialog jest już otwarty, zamyka go i otwiera nowy dla nowego agenta.
+   */
+  static async show(agentId, agentName) {
+    // Jeśli otwarto dla innego agenta — zamknij poprzedni
+    const existing = foundry.applications.instances.get(`${MODULE_ID}-action-select`);
+    if (existing) existing.close({ force: true });
+
+    return new Promise((resolve) => {
+      const dlg = new ActionSelectionDialog({ agentId, agentName });
+      dlg.#resolve = resolve;
+      dlg.render(true);
+    });
+  }
+
+  async _prepareContext(options) {
+    // Szablony akcji dostępne do wyboru
     const actionTemplates = [
-      { name: t("short-rest"), cost: 1 },
-      { name: t("npc-conversation"), cost: 1 },
-      { name: t("explore-near-town"), cost: 3 },
-      { name: t("investigate-location"), cost: 1 },
-      { name: t("meal-at-diner"), cost: 1 },
-      { name: t("medical-care-light"), cost: 2 },
-      { name: t("travel-town-colony"), cost: 1 },
-      { name: t("forest-exploration"), cost: 6 }
+      { name: game.i18n.localize(`${MODULE_ID}.short-rest`), cost: 1 },
+      { name: game.i18n.localize(`${MODULE_ID}.npc-conversation`), cost: 1 },
+      { name: game.i18n.localize(`${MODULE_ID}.investigate-location`), cost: 1 },
+      { name: game.i18n.localize(`${MODULE_ID}.meal-at-diner`), cost: 1 },
+      { name: game.i18n.localize(`${MODULE_ID}.travel-town-colony`), cost: 1 },
+      { name: game.i18n.localize(`${MODULE_ID}.medical-care-light`), cost: 2 },
+      { name: game.i18n.localize(`${MODULE_ID}.explore-near-town`), cost: 3 },
+      { name: game.i18n.localize(`${MODULE_ID}.forest-exploration`), cost: 6 },
     ];
-    let templatesHTML = actionTemplates.map(template => `
-      <div class="action-template" data-name="${template.name}" data-cost="${template.cost}">
-        <div class="action-template-name">${template.name}</div>
-        <div class="action-template-cost">${template.cost}h</div>
-      </div>
-    `).join("");
-    const content = `
-      <div class="action-selection-dialog">
-        <h3>${t("add-action")} ${t("for")}: <strong>${agentName}</strong></h3>
-        <h4>${t("choose-action-template")}:</h4>
-        <div class="action-templates-scroll">
-          <div class="action-templates">
-            ${templatesHTML}
-          </div>
-        </div>
-        <div class="custom-action-section">
-          <h4>${t("or-create-custom")}:</h4>
-          <input type="text" class="custom-action-input" id="custom-action-name" placeholder="${t("action-name-placeholder")}" />
-          <input type="number" class="custom-action-input" id="custom-action-cost" placeholder="${t("cost-in-hours-placeholder")}" min="1" max="12" />
-        </div>
-      </div>
-    `;
-    super({
-      title: t("select-action"),
-      content,
-      buttons: [
-        {
-          action: "add",
-          label: t("add-action"),
-          icon: '<i class="fas fa-plus"></i>',
-          callback: (event, button, dialog) => {
-            const contentElement = dialog.element.querySelector('.window-content');
-            let actionName, actionCost;
-            const selectedTemplate = contentElement.querySelector('.action-template.selected');
-            if (selectedTemplate) {
-              actionName = selectedTemplate.dataset.name;
-              actionCost = parseInt(selectedTemplate.dataset.cost);
-            } else {
-              actionName = contentElement.querySelector('#custom-action-name')?.value?.trim();
-              actionCost = parseInt(contentElement.querySelector('#custom-action-cost')?.value);
-            }
-            if (actionName && actionCost && actionCost > 0) {
-              onActionSelected?.(agentId, agentName, actionName, actionCost);
-            } else {
-              ui.notifications.warn(t("select-action-or-enter-data"));
-              return false; // Zapobiega zamknięciu dialogu
-            }
-          }
-        },
-        {
-          action: "cancel",
-          label: t("cancel"),
-          icon: '<i class="fas fa-times"></i>'
-        }
-      ]
-    }, {
-      width: 420,
-      height: 580,
-      resizable: true,
-      popOut: true
-    });
-    this.agentId = agentId;
-    this.agentName = agentName;
-    this.onActionSelected = onActionSelected;
+    return { agentName: this.#agentName, actionTemplates };
   }
 
-  async _onRender(context, options) {
-    await super._onRender(context, options);
-    const contentElement = this.element.querySelector('.window-content');
-    
-    // Handle action template selection
-    contentElement.querySelectorAll('.action-template').forEach(template => {
-      template.addEventListener('click', () => {
-        contentElement.querySelectorAll('.action-template').forEach(t => {
-          t.classList.remove('selected');
-          t.style.background = '';
-        });
-        template.classList.add('selected');
-        template.style.background = 'rgba(76, 175, 80, 0.2)';
-        contentElement.querySelector('#custom-action-name').value = '';
-        contentElement.querySelector('#custom-action-cost').value = '';
+  _onRender(context, options) {
+    // Obsługa zaznaczania szablonu akcji
+    this.element.querySelectorAll(".action-template").forEach(template => {
+      template.addEventListener("click", () => {
+        this.element.querySelectorAll(".action-template").forEach(t => t.classList.remove("selected"));
+        template.classList.add("selected");
+        this.#selectedTemplate = {
+          actionName: template.dataset.name,
+          actionCost: Number(template.dataset.cost),
+        };
+        // Wyczyść pola własnej akcji gdy wybrany szablon
+        const nameInput = this.element.querySelector("#custom-action-name");
+        const costInput = this.element.querySelector("#custom-action-cost");
+        if (nameInput) nameInput.value = "";
+        if (costInput) costInput.value = "";
       });
     });
-    
-    // Handle custom input changes
-    const customInputs = contentElement.querySelectorAll('#custom-action-name, #custom-action-cost');
-    customInputs.forEach(input => {
-      input.addEventListener('input', () => {
-        contentElement.querySelectorAll('.action-template').forEach(t => {
-          t.classList.remove('selected');
-          t.style.background = '';
-        });
-      });
+
+    // Odznacz szablon gdy użytkownik zaczyna pisać własną nazwę
+    this.element.querySelector("#custom-action-name")?.addEventListener("input", () => {
+      this.#selectedTemplate = null;
+      this.element.querySelectorAll(".action-template").forEach(t => t.classList.remove("selected"));
     });
+  }
+
+  _onClose(options) {
+    // Resolve z null jeśli zamknięto bez potwierdzenia (np. przez X)
+    this.#resolve?.(null);
+    this.#resolve = null;
+  }
+
+  // --- Handlery akcji ---
+
+  static #onConfirm(event, target) {
+    const result = this.#getSelectedAction();
+    if (!result) {
+      ui.notifications.warn(game.i18n.localize(`${MODULE_ID}.select-action-or-enter-data`));
+      return;
+    }
+    this.#resolve?.(result);
+    this.#resolve = null; // zapobiegaj podwójnemu resolve przez _onClose
+    this.close();
+  }
+
+  static #onCancel(event, target) {
+    this.#resolve?.(null);
+    this.#resolve = null;
+    this.close();
+  }
+
+  // --- Metody prywatne ---
+
+  #getSelectedAction() {
+    // Szablon wybrany przez kliknięcie
+    if (this.#selectedTemplate) return this.#selectedTemplate;
+
+    // Własna akcja wpisana ręcznie
+    const nameInput = this.element?.querySelector("#custom-action-name");
+    const costInput = this.element?.querySelector("#custom-action-cost");
+    const actionName = nameInput?.value?.trim();
+    const actionCost = Number(costInput?.value);
+
+    if (!actionName || !actionCost || actionCost < 1) return null;
+    return { actionName, actionCost };
   }
 }
+

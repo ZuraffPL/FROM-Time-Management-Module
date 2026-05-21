@@ -5,6 +5,48 @@ All notable changes to the FROM Time Management System will be documented in thi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.0.0] - 2026-05-21
+
+### 🔧 FULL FOUNDRY V13+ API COMPLIANCE REFACTORING
+
+Complete architectural rewrite to comply with Foundry VTT v13+ API requirements. All dialogs migrated to `ApplicationV2 + HandlebarsApplicationMixin`, all logic separated into Handlebars templates, multiplayer sync refactored to use native `onChange` callbacks, and numerous bugs fixed.
+
+### Fixed
+- **Critical: Agent Tracker buttons non-functional** — `AgentTrackerDialog` was missing `_onRender()` implementation, making Add Action, Day/Night Mode, Reset Agent, Adjust Time and Visibility Toggle buttons completely inert.
+- **Critical: "not renderable" error** — All `ApplicationV2` subclasses were missing `HandlebarsApplicationMixin`, causing Foundry to throw `_renderHTML and _replaceHTML not implemented` on first render.
+- **Critical: Wrong actor type filter** — `#getActiveAgents()` filtered for `actor.type === "character"` but Delta Green RPG uses `"agent"`. Agent Tracker showed "No active players" even with agents assigned.
+- **Old actions stuck in queue** — Delete used strict `===` between string (dataset) and numeric id (legacy `Date.now()`). Updated to `String(a.id) === actionId`.
+- **Missing "Archive completed" button** — `clearCompletedActions()` existed but was not exposed in the UI. Button now appears in the queue footer for GM when completed actions exist.
+- **Double settings registration** — `trackingMode` was registered in both `main.mjs` and `time-management-dialog.js`.
+- **Players couldn't add actions** — `requestAddAction` socket message emitted by players had no handler in `main.mjs`.
+- **`window.TimeManagement` reference** — `#onResetAgentDay` called non-existent `window.TimeManagement.showResetDayDialog()`. Replaced with inline `DialogV2.confirm()`.
+- **Socket data leakage** — Dialogs previously emitted full state objects. Now only event types are emitted; data is read from `game.settings`.
+
+### Changed
+- **All dialogs** now extend `HandlebarsApplicationMixin(ApplicationV2)` — correct pattern for HBS template rendering in Foundry v13+.
+- **All dialog content** moved to 5 Handlebars template files in `templates/`.
+- **Singleton pattern** — Replaced `static _instance` with `foundry.applications.instances.get(id)` + fixed `id` in `DEFAULT_OPTIONS`.
+- **`ActionSelectionDialog`** — Changed from callback-based to `static async show() → Promise<result|null>`.
+- **`gameTime` setting** — Changed from `type: String` + JSON parse/stringify to `type: Object`.
+- **Action IDs** — Changed from `Date.now()` (number) to `foundry.utils.randomID()` (string). Old IDs still work via `String(id)` comparison.
+- **`duplicate()` → `deepClone()`** — All deprecated calls replaced.
+- **Multiplayer sync** — `socket.emit({ type: "refresh" })` replaced with `onChange` callbacks on all world settings. Every client including the sender re-renders automatically.
+- **Socket listener** — Consolidated all per-file listeners into single validated listener in `main.mjs`.
+- **Agent Tracker** — Only shows agents of `user.active` players (currently connected).
+
+### Added
+- `templates/` folder with 5 HBS templates: `time-management-main.hbs`, `agent-tracker.hbs`, `action-queue.hbs`, `action-selection.hbs`, `action-archive.hbs`.
+- `onChange` reactive sync on all world settings — automatic re-render on every connected client.
+- "Archive completed" button in Action Queue footer (GM only).
+- `archive-completed` translation key in `en.json` and `pl.json`.
+
+### Removed
+- `socket.emit({ type: "refresh" })` from all script files — superseded by `onChange`.
+- `case "refresh"` socket handler from `main.mjs` — dead code.
+- Unused `import { TimeManagementDialog }` from `agent-tracker-dialog.js`.
+- `scripts/time-management.old.js` added to `.gitignore`.
+
+---
 ## [2.1.0] - 2026-02-18
 
 ### ✨ UI OVERHAUL: FLICKER-FREE DIALOGS, INLINE ACTIONS & GM CONTROLS

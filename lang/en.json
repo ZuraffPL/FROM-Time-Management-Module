@@ -96,6 +96,14 @@
     "for": "for",
     "cancel": "Cancel",
     "select-action-or-enter-data": "Please select an action or enter valid data",
-    "completed": "completed"
+    "completed": "completed",
+    "show-agent": "Show agent",
+    "hide-agent": "Hide agent",
+    "action-request-sent": "Action request sent to GM for approval.",
+    "reset-agent-day-confirm": "Reset time tracking for {name}?",
+    "delete-action": "Delete Action",
+    "delete-action-confirm": "Delete action",
+    "unknown-player": "Unknown Player",
+  "archive-completed": "Archive completed actions"
   }
 }

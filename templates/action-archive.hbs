@@ -1,0 +1,41 @@
+<div class="archive-window">
+  <div class="archive-header">
+    <h3>{{localize "from-time-management.action-archive"}} - {{agentName}}</h3>
+    {{#if totalCount}}
+      <div class="archive-stats">
+        {{localize "from-time-management.total-actions"}}: <strong>{{totalCount}}</strong>
+      </div>
+    {{/if}}
+  </div>
+
+  <div class="archive-content">
+    {{#if days.length}}
+      {{#each days}}
+        <div class="day-section">
+          <div class="day-header" data-day="{{day}}">
+            <span class="day-toggle">▶</span>
+            <span class="day-title">{{localize "from-time-management.day"}}: {{day}}</span>
+            <span class="day-count">{{actions.length}} {{localize "from-time-management.actions"}}</span>
+          </div>
+          <div class="day-actions collapsed">
+            {{#each actions}}
+              <div class="archive-action-item {{#if completed}}completed{{/if}}">
+                <div class="archive-action-info">
+                  <div class="archive-action-name">{{name}}</div>
+                  <div class="archive-action-details">
+                    {{fromLabel}}: {{startTimeStr}} {{toLabel}}: {{endTimeStr}} | {{modeLabel}}{{#if completed}} | ✅{{/if}}<br>{{addedOnStr}}
+                  </div>
+                </div>
+                <div class="archive-action-cost">{{cost}}h</div>
+              </div>
+            {{/each}}
+          </div>
+        </div>
+      {{/each}}
+    {{else}}
+      <div class="no-actions-message">
+        {{localize "from-time-management.no-archived-actions"}}
+      </div>
+    {{/if}}
+  </div>
+</div>

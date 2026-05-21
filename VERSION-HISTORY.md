@@ -1,6 +1,41 @@
 # FROM Time Management System - Version History
 
-## Version 2.1.0 (2026-02-18) - CURRENT RELEASE
+## Version 3.0.0 (2026-05-21) - CURRENT RELEASE
+**🔧 FULL FOUNDRY V13+ API COMPLIANCE REFACTORING**
+
+### Critical Bug Fixes
+- ✅ **Agent Tracker Buttons Non-functional**: Missing `_onRender()` in `AgentTrackerDialog` — Add Action, Day/Night Mode, Reset and Adjust Time buttons now work
+- ✅ **Dialog "not renderable" Error**: Added mandatory `HandlebarsApplicationMixin` to all `ApplicationV2` subclasses
+- ✅ **Wrong Actor Type**: `#getActiveAgents()` used `"character"` but Delta Green uses `"agent"` — tracker now shows agents
+- ✅ **Old Actions Stuck in Queue**: Legacy numeric IDs (`Date.now()`) couldn't be deleted; fixed with `String(id)` comparison
+- ✅ **Players Couldn't Add Actions**: Socket `requestAddAction` had no GM handler — now handled in `main.mjs`
+- ✅ **`window.TimeManagement` Reference**: Replaced dead reference with inline `DialogV2.confirm()`
+
+### Architecture Changes
+- ✅ **All Dialogs**: `HandlebarsApplicationMixin(ApplicationV2)` — correct Foundry v13+ pattern
+- ✅ **5 HBS Templates**: All dialog content moved to `templates/` folder
+- ✅ **Singleton Pattern**: `foundry.applications.instances.get(id)` replaces `static _instance`
+- ✅ **Promise-based `ActionSelectionDialog`**: `static async show()` returns `Promise<result|null>`
+- ✅ **`gameTime` type**: `type: Object` replaces `type: String` + manual JSON parse
+- ✅ **`randomID()` for action IDs**: Replaces `Date.now()`
+- ✅ **`deepClone()`**: Replaces deprecated `duplicate()`
+
+### Multiplayer Sync
+- ✅ **`onChange` Reactive Sync**: All world settings trigger window re-renders on every client automatically — including the GM
+- ✅ **Removed socket `refresh` broadcasts**: Superseded by `onChange`; no more double-renders on remote clients
+- ✅ **Single socket listener**: Consolidated from multiple per-file listeners to one validated handler in `main.mjs`
+
+### UI Additions
+- ✅ **"Archive Completed" Button**: GM footer button in Action Queue archives all completed actions at once
+- ✅ **Active Players Only**: Agent Tracker filters `user.active` — only shows connected players
+
+### Cleanup
+- ✅ Removed unused `import { TimeManagementDialog }` from `agent-tracker-dialog.js`
+- ✅ `scripts/time-management.old.js` added to `.gitignore`
+- ✅ Removed redundant `this.render()` calls from action handlers (`onChange` handles it)
+
+---
+## Version 2.1.0 (2026-02-18) - PREVIOUS RELEASE (2026-02-18) - CURRENT RELEASE
 **✨ UI OVERHAUL: FLICKER-FREE DIALOGS, INLINE ACTIONS & GM CONTROLS**
 
 ### Critical Fixes

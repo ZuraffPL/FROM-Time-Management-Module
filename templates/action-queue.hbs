@@ -1,0 +1,81 @@
+<div class="action-queue-window">
+  <div class="queue-header">
+    <h2>{{localize "from-time-management.action-queue"}}</h2>
+    <div class="queue-stats">
+      {{localize "from-time-management.total-actions"}}: <strong>{{totalCount}}</strong><br>
+      {{localize "from-time-management.completed-actions"}}: <strong>{{completedCount}}</strong>
+    </div>
+  </div>
+
+  <div class="action-list">
+    {{#if totalCount}}
+      {{#each activeActions}}
+        <div class="action-item agent-theme-{{agentTheme}}" data-action-id="{{id}}">
+          {{#if ../isGM}}<input type="checkbox" class="action-checkbox">{{/if}}
+          <div class="action-info">
+            <div class="action-name"><strong>{{name}}</strong></div>
+            <div class="action-details">
+              {{localize "from-time-management.player"}}: <strong>{{agentName}}</strong> |
+              {{localize "from-time-management.from-time"}}: {{startTimeStr}}
+              {{localize "from-time-management.to-time"}} {{endTimeStr}} | {{modeLabel}}
+            </div>
+          </div>
+          <div class="action-cost">{{cost}}h</div>
+          {{#if ../isGM}}
+            <button class="action-delete-btn" data-action="deleteAction" data-action-id="{{id}}" title="Delete">
+              <i class="fas fa-trash"></i>
+            </button>
+          {{/if}}
+        </div>
+      {{/each}}
+
+      {{#if showSeparator}}
+        <div class="action-separator">
+          <hr>
+          <div class="completed-separator-label">
+            <i class="fas fa-check-double"></i>
+            {{localize "from-time-management.completed-actions"}}
+          </div>
+        </div>
+      {{/if}}
+
+      {{#each completedActions}}
+        <div class="action-item agent-theme-{{agentTheme}} completed" data-action-id="{{id}}">
+          {{#if ../isGM}}<input type="checkbox" class="action-checkbox" checked>{{/if}}
+          <div class="action-info">
+            <div class="action-name"><strong>{{name}}</strong></div>
+            <div class="action-details">
+              {{localize "from-time-management.player"}}: <strong>{{agentName}}</strong> |
+              {{localize "from-time-management.from-time"}}: {{startTimeStr}}
+              {{localize "from-time-management.to-time"}} {{endTimeStr}} |
+              {{modeLabel}} | ✅ {{localize "from-time-management.completed"}}
+            </div>
+          </div>
+          <div class="action-cost">{{cost}}h</div>
+          {{#if ../isGM}}
+            <button class="action-delete-btn" data-action="deleteAction" data-action-id="{{id}}" title="Delete">
+              <i class="fas fa-trash"></i>
+            </button>
+          {{/if}}
+        </div>
+      {{/each}}
+    {{else}}
+      <div class="no-actions-message">
+        <i class="fas fa-clipboard-list"></i>
+        {{localize "from-time-management.action-queue-empty"}}
+      </div>
+    {{/if}}
+  </div>
+
+  {{#if isGM}}
+    {{#if completedCount}}
+      <div class="queue-footer">
+        <button type="button" data-action="archiveCompleted" class="archive-completed-btn">
+          <i class="fas fa-archive"></i>
+          {{localize "from-time-management.archive-completed"}}
+          ({{completedCount}})
+        </button>
+      </div>
+    {{/if}}
+  {{/if}}
+</div>

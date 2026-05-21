@@ -1,0 +1,100 @@
+<div class="agent-tracker-window {{#if isNight}}night-mode{{/if}}">
+  <div class="agent-tracker-header">
+    <h2>{{localize "from-time-management.agent-activity"}}</h2>
+    <div class="header-time-info">
+      {{localize "from-time-management.current-time"}}: <strong>{{timeStr}}</strong><br>
+      <span>
+        {{#if isCurrentlyDay}}
+          ☀️ {{localize "from-time-management.day-period"}}
+        {{else}}
+          🌙 {{localize "from-time-management.night-period"}}
+        {{/if}}
+      </span>
+    </div>
+  </div>
+
+  <div class="tracking-mode-toggle">
+    <button type="button" class="mode-button {{#if isDay}}active day-mode{{/if}}"
+            data-action="setDayMode" {{#unless isGM}}disabled{{/unless}}>
+      <i class="fas fa-sun"></i> {{localize "from-time-management.day-time"}}
+    </button>
+    <button type="button" class="mode-button {{#if isNight}}active night-mode{{/if}}"
+            data-action="setNightMode" {{#unless isGM}}disabled{{/unless}}>
+      <i class="fas fa-moon"></i> {{localize "from-time-management.night-time"}}
+    </button>
+  </div>
+
+  <div class="queue-open-row">
+    <button type="button" class="time-button queue-open-btn" data-action="openActionQueue">
+      <i class="fas fa-list-ul"></i> {{localize "from-time-management.action-queue"}}
+    </button>
+  </div>
+
+  <div class="agent-list">
+    {{#if agents.length}}
+      {{#each agents}}
+        <div class="agent-entry {{#if isHidden}}agent-hidden{{/if}}" data-agent-id="{{id}}">
+          <div class="agent-header-row">
+            {{#if ../isGM}}
+              <button type="button" class="agent-visibility-btn"
+                      data-action="toggleAgentVisibility" data-agent-id="{{id}}"
+                      title="{{#if isHidden}}{{localize "from-time-management.show-agent"}}{{else}}{{localize "from-time-management.hide-agent"}}{{/if}}">
+                <i class="fas {{#if isHidden}}fa-eye-slash{{else}}fa-eye{{/if}}"></i>
+              </button>
+            {{/if}}
+            <img src="{{avatar}}" alt="{{name}}" class="agent-avatar">
+            <div class="agent-info">
+              <div class="agent-name">{{name}}</div>
+              <div class="agent-player">{{localize "from-time-management.player"}}: {{playerName}}</div>
+            </div>
+            <div class="time-progress-container">
+              <div class="time-progress-bar">
+                {{#each segments}}<div class="{{this.cls}}"></div>{{/each}}
+              </div>
+              <div class="time-progress-label">{{modeIcon}} {{timeSpentStr}}h / 12h ({{modeLabel}})</div>
+            </div>
+            {{#if ../isGM}}
+              <div class="time-adjustment-controls">
+                <button type="button" class="time-adjust-btn minus"
+                        data-action="adjustTime" data-agent-id="{{id}}" data-adjustment="-1"
+                        title="{{localize "from-time-management.subtract-hour"}}">
+                  <i class="fas fa-minus"></i> 1h
+                </button>
+                <button type="button" class="time-adjust-btn plus"
+                        data-action="adjustTime" data-agent-id="{{id}}" data-adjustment="1"
+                        title="{{localize "from-time-management.add-hour"}}">
+                  <i class="fas fa-plus"></i> 1h
+                </button>
+              </div>
+            {{/if}}
+          </div>
+          <div class="agent-controls-row">
+            <div class="agent-buttons">
+              {{#if canManage}}
+                <button type="button" class="add-action-btn"
+                        data-action="addAction" data-agent-id="{{id}}" data-agent-name="{{name}}">
+                  <i class="fas fa-plus"></i> {{localize "from-time-management.add-action"}}
+                </button>
+                <button type="button" class="action-archive-btn"
+                        data-action="openArchive" data-agent-id="{{id}}" data-agent-name="{{name}}">
+                  <i class="fas fa-archive"></i> {{localize "from-time-management.action-archive"}}
+                </button>
+              {{/if}}
+              {{#if ../isGM}}
+                <button type="button" class="reset-day-btn"
+                        data-action="resetAgentDay" data-agent-id="{{id}}" data-agent-name="{{name}}">
+                  <i class="fas fa-undo"></i> {{localize "from-time-management.reset-day"}}
+                </button>
+              {{/if}}
+            </div>
+          </div>
+        </div>
+      {{/each}}
+    {{else}}
+      <div class="no-agents-message">
+        <i class="fas fa-user-slash"></i>
+        {{localize "from-time-management.no-active-agents"}}
+      </div>
+    {{/if}}
+  </div>
+</div>
