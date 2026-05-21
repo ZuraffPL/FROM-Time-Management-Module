@@ -1,5 +1,12 @@
 # FROM Time Management System for Delta Green
 
+[![Version](https://img.shields.io/badge/version-3.0.0-blue?style=flat-square)](https://github.com/ZuraffPL/FROM-Time-Management-Module/releases/latest)
+[![Foundry VTT](https://img.shields.io/badge/Foundry%20VTT-v12%2B%20%7C%20v13%2B-orange?style=flat-square&logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+PHBhdGggZD0iTTE2IDJMMiAyOGgxMkwxNiA4bDIgNmg0eiIgZmlsbD0iI2ZmZiIvPjwvc3ZnPg==)](https://foundryvtt.com)
+[![Verified](https://img.shields.io/badge/verified-v13.351-green?style=flat-square)](https://foundryvtt.com/releases/)
+[![License](https://img.shields.io/badge/license-CC%20BY--NC--SA%204.0-lightgrey?style=flat-square)](https://creativecommons.org/licenses/by-nc-sa/4.0/)
+[![System](https://img.shields.io/badge/system-Delta%20Green-darkred?style=flat-square)](https://www.delta-green.com/)
+[![Languages](https://img.shields.io/badge/lang-EN%20%7C%20PL-informational?style=flat-square)](#localization)
+
 A comprehensive time management module for Delta Green RPG sessions in Foundry VTT, inspired by the mechanics of the FROM TV series.
 
 > **Current Version: 3.0.0** — 🔧 **FULL v13+ REFACTORING**: ApplicationV2 + HBS templates, reactive sync, critical bug fixes.
@@ -96,7 +103,7 @@ A comprehensive time management module for Delta Green RPG sessions in Foundry V
 3. Click **Install** and enable in your world
 
 ### Manual Installation
-1. Download `from-time-management-v2.1.0.zip` from the [releases page](https://github.com/ZuraffPL/FROM-Time-Management-Module/releases)
+1. Download `from-time-management-v3.0.0.zip` from the [releases page](https://github.com/ZuraffPL/FROM-Time-Management-Module/releases)
 2. Extract to your `Data/modules/` directory
 3. Restart Foundry VTT and enable the module in your world
 
