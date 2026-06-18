@@ -5,6 +5,24 @@ All notable changes to the FROM Time Management System will be documented in thi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.0.2] - 2026-06-18
+
+### 🪟 Agent Tracker — UX & Auto-sizing
+
+### Added
+- **Double-click to open actor sheet** — double-clicking an agent entry (outside buttons) opens their character sheet for both players and GM. If the sheet is already open, it is brought to the top (`bringToTop()`).
+- **Auto-refresh on actor roster changes** — tracker window now reacts in real time to: actor created (`createActor`), actor deleted (`deleteActor`), actor ownership/type change (`updateActor`), and player connect/disconnect (`userConnected`). Previously required closing/reopening the window or GM toggling day/night.
+
+### Fixed
+- **Window height** — `AgentTrackerDialog` now opens at `height: "auto"`, fitting all visible agents without requiring manual resize. Height also re-adapts automatically whenever the agent list changes (added `setPosition({ height: "auto" })` in `_onRender`).
+- **Window width** — increased from 600 px to 680 px; ±1h adjustment buttons no longer overlap the time progress bar in the GM view.
+- **Removed `scrollY` on agent list** — the agent list no longer has an internal scrollbar; the window itself expands to show all agents.
+
+### Changed
+- `refreshTime` / `refreshTracker` / `refreshQueue` helpers moved from inside `Hooks.once("init")` to module scope so they can be used by all hooks throughout `main.mjs`.
+
+---
+
 ## [3.0.0] - 2026-05-21
 
 ### 🔧 FULL FOUNDRY V13+ API COMPLIANCE REFACTORING

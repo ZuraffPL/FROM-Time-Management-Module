@@ -4,15 +4,16 @@ import { ActionQueueDialog } from "./scripts/action-queue-dialog.js";
 
 const MODULE_ID = "from-time-management";
 
+// Pomocnicze funkcje odświeżania — dostępne w całym module
+const refreshTime    = () => foundry.applications.instances.get(`${MODULE_ID}-main`)?.render();
+const refreshTracker = () => foundry.applications.instances.get(`${MODULE_ID}-agent-tracker`)?.render();
+const refreshQueue   = () => foundry.applications.instances.get(`${MODULE_ID}-action-queue`)?.render();
+
 // --------------------------------------------------------------------------
 // init — rejestracja wszystkich ustawień modułu
 // --------------------------------------------------------------------------
 
 Hooks.once("init", () => {
-  // Pomocnicze funkcje odświeżania — wywołane przez onChange na każdym kliencie
-  const refreshTime    = () => foundry.applications.instances.get(`${MODULE_ID}-main`)?.render();
-  const refreshTracker = () => foundry.applications.instances.get(`${MODULE_ID}-agent-tracker`)?.render();
-  const refreshQueue   = () => foundry.applications.instances.get(`${MODULE_ID}-action-queue`)?.render();
 
   // Czas gry: { day, hour, minute, year }
   game.settings.register(MODULE_ID, "gameTime", {
@@ -87,6 +88,26 @@ Hooks.once("init", () => {
     onChange: refreshTracker,
   });
 });
+
+// --------------------------------------------------------------------------
+// Hooki aktorów i użytkowników — odświeżanie trackera gdy lista agentów się zmienia
+// --------------------------------------------------------------------------
+
+// Nowy agent pojawia się w grze
+Hooks.on("createActor", refreshTracker);
+
+// Agent opuszcza grę (usunięty)
+Hooks.on("deleteActor", refreshTracker);
+
+// Zmiana właściciela lub typu aktora — tylko te zmiany wpływają na listę agentów
+Hooks.on("updateActor", (actor, changed) => {
+  if ("ownership" in changed || "type" in changed) {
+    refreshTracker();
+  }
+});
+
+// Gracz łączy się lub rozłącza — zmienia u.active, co wpływa na listę aktywnych agentów
+Hooks.on("userConnected", refreshTracker);
 
 // --------------------------------------------------------------------------
 // getSceneControlButtons — przyciski kontrolek sceny (v13 API)

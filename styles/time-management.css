@@ -299,6 +299,7 @@
     background: rgba(255, 255, 255, 0.95);
     transform: translateY(-1px);
     box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+    cursor: pointer;
 }
 
 .agent-header-row {

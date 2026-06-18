@@ -193,7 +193,7 @@ export class AgentTrackerDialog extends HandlebarsApplicationMixin(ApplicationV2
     id: `${MODULE_ID}-agent-tracker`,
     classes: ["from-time-management", "agent-tracker-dialog"],
     window: { resizable: true },
-    position: { width: 600, height: 700 },
+    position: { width: 680, height: "auto" },
     actions: {
       setDayMode: AgentTrackerDialog.#onSetDayMode,
       setNightMode: AgentTrackerDialog.#onSetNightMode,
@@ -209,7 +209,6 @@ export class AgentTrackerDialog extends HandlebarsApplicationMixin(ApplicationV2
   static PARTS = {
     main: {
       template: `modules/${MODULE_ID}/templates/agent-tracker.hbs`,
-      scrollY: [".agent-list"],
     },
   };
 
@@ -281,6 +280,26 @@ export class AgentTrackerDialog extends HandlebarsApplicationMixin(ApplicationV2
       timeStr: `${h}:${m}, ${game.i18n.localize(`${MODULE_ID}.day-label`)} ${currentTime.day}`,
       isCurrentlyDay: currentTime.hour >= 6 && currentTime.hour < 18,
     };
+  }
+
+  _onRender(context, options) {
+    this.setPosition({ height: "auto" });
+
+    // Dwuklik na wpisie agenta otwiera jego kartę postaci
+    this.element.querySelectorAll(".agent-entry").forEach(entry => {
+      entry.addEventListener("dblclick", (event) => {
+        if (event.target.closest("button")) return;
+        const actor = game.actors.get(entry.dataset.agentId);
+        if (!actor) return;
+        const sheet = actor.sheet;
+        if (!sheet) return;
+        if (sheet.rendered) {
+          sheet.bringToTop?.();
+        } else {
+          sheet.render(true);
+        }
+      });
+    });
   }
 
   // --- Handlery akcji ---

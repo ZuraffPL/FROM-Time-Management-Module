@@ -1,6 +1,6 @@
 # FROM Time Management System for Delta Green
 
-[![Version](https://img.shields.io/badge/version-3.0.0-blue?style=flat-square)](https://github.com/ZuraffPL/FROM-Time-Management-Module/releases/latest)
+[![Version](https://img.shields.io/badge/version-3.0.2-blue?style=flat-square)](https://github.com/ZuraffPL/FROM-Time-Management-Module/releases/latest)
 [![Foundry VTT](https://img.shields.io/badge/Foundry%20VTT-v12%2B%20%7C%20v13%2B-orange?style=flat-square&logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+PHBhdGggZD0iTTE2IDJMMiAyOGgxMkwxNiA4bDIgNmg0eiIgZmlsbD0iI2ZmZiIvPjwvc3ZnPg==)](https://foundryvtt.com)
 [![Verified](https://img.shields.io/badge/verified-v13.351-green?style=flat-square)](https://foundryvtt.com/releases/)
 [![License](https://img.shields.io/badge/license-CC%20BY--NC--SA%204.0-lightgrey?style=flat-square)](https://creativecommons.org/licenses/by-nc-sa/4.0/)
@@ -9,12 +9,20 @@
 
 A comprehensive time management module for Delta Green RPG sessions in Foundry VTT, inspired by the mechanics of the FROM TV series.
 
-> **Current Version: 3.0.0** — 🔧 **FULL v13+ REFACTORING**: ApplicationV2 + HBS templates, reactive sync, critical bug fixes.
+> **Current Version: 3.0.2** — 🪟 **AGENT TRACKER UX**: auto-height window, wider layout, double-click opens actor sheet, live roster refresh.
 > [See full changelog](CHANGELOG.md) for complete history.
 
 ---
 
-## ✨ What's New in v3.0.0
+## ✨ What's New in v3.0.2
+
+- **Auto-height window** — Agent Tracker opens at the correct height for all visible agents and re-adapts automatically when agents join or leave; no more manual resizing
+- **Wider layout** — window width increased from 600 px to 680 px; ±1h buttons no longer overlap the time progress bar in GM view
+- **Double-click to open actor sheet** — double-clicking an agent entry (outside action buttons) opens their character sheet for both players and GM
+- **Live roster refresh** — the tracker reacts in real time to actor creation/deletion, ownership changes, and player connect/disconnect without needing to reopen the window
+
+<details>
+<summary>What was new in v3.0.0</summary>
 
 - **Critical fixes** — Agent Tracker buttons now work (missing `_onRender` fixed), dialog renders correctly (added `HandlebarsApplicationMixin`), agents visible again (fixed actor type `"agent"` vs `"character"`)
 - **Full Foundry v13+ API compliance** — all dialogs use `HandlebarsApplicationMixin(ApplicationV2)` with separate HBS templates
@@ -22,6 +30,8 @@ A comprehensive time management module for Delta Green RPG sessions in Foundry V
 - **Promise-based Action Selection** — `ActionSelectionDialog.show()` returns `Promise<result|null>`
 - **Archive completed actions button** — GM can archive all completed queue entries in one click
 - **Old actions unstuck** — legacy numeric IDs (from `Date.now()`) now work with string comparison
+
+</details>
 
 ---
 
@@ -103,7 +113,7 @@ A comprehensive time management module for Delta Green RPG sessions in Foundry V
 3. Click **Install** and enable in your world
 
 ### Manual Installation
-1. Download `from-time-management-v3.0.0.zip` from the [releases page](https://github.com/ZuraffPL/FROM-Time-Management-Module/releases)
+1. Download `from-time-management-v3.0.2.zip` from the [releases page](https://github.com/ZuraffPL/FROM-Time-Management-Module/releases)
 2. Extract to your `Data/modules/` directory
 3. Restart Foundry VTT and enable the module in your world
 

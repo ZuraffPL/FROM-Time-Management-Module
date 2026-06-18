@@ -1,6 +1,23 @@
 # FROM Time Management System - Version History
 
-## Version 3.0.0 (2026-05-21) - CURRENT RELEASE
+## Version 3.0.2 (2026-06-18) - CURRENT RELEASE
+**🪟 AGENT TRACKER — UX & AUTO-SIZING**
+
+### New Features
+- ✅ **Double-click opens actor sheet**: Double-clicking an agent entry (outside buttons) opens their character sheet for both players and GM; `bringToTop()` used if sheet is already open
+- ✅ **Auto-refresh on roster changes**: Tracker now reacts automatically to actor creation, deletion, ownership/type changes, and player connect/disconnect — no more manual window reopen required
+
+### Bug Fixes
+- ✅ **Auto-height window**: `AgentTrackerDialog` opens with `height: "auto"` and re-adapts on each re-render via `setPosition({ height: "auto" })` in `_onRender`
+- ✅ **Wider window**: Width increased 600 → 680 px; ±1h buttons no longer overlap the time progress bar in GM view
+- ✅ **No internal agent list scrollbar**: Removed `scrollY: [".agent-list"]`; window expands to show all agents
+
+### Internal Changes
+- ✅ `refreshTime` / `refreshTracker` / `refreshQueue` moved to module scope in `main.mjs`
+
+---
+
+## Version 3.0.0 (2026-05-21)
 **🔧 FULL FOUNDRY V13+ API COMPLIANCE REFACTORING**
 
 ### Critical Bug Fixes
